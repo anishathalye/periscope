@@ -1,0 +1,57 @@
+project_name: periscope
+before:
+  hooks:
+    - go mod download
+builds:
+  - id: periscope-darwin-amd64
+    main: ./cmd/psc/
+    binary: psc
+    env:
+      - CGO_ENABLED=1
+      - CC=o64-clang
+      - CXX=o64-clang++
+    goos:
+      - darwin
+    goarch:
+      - amd64
+  - id: periscope-linux-amd64
+    main: ./cmd/psc/
+    binary: psc
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+    goarch:
+      - amd64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "SNAPSHOT-{{ .ShortCommit }}"
+changelog:
+  skip: true
+archives:
+  - wrap_in_directory: true
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{.ProjectName}}-v{{.Version}}-{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+    files:
+      - README.md
+      - LICENSE.txt
+release:
+  github:
+    owner: anishathalye
+    name: periscope
