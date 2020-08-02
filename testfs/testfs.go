@@ -57,36 +57,10 @@ func genFile(w io.Writer, size int64, seed int64) {
 	io.CopyN(w, r, size-8)
 }
 
-func allDirs(path string) []string {
-	var dirs []string
-	for path != "/" {
-		path = filepath.Dir(path)
-		dirs = append(dirs, path)
-	}
-	rdirs := make([]string, len(dirs))
-	for i := range dirs {
-		rdirs[i] = dirs[len(dirs)-1-i]
-	}
-	return rdirs
-}
-
 func (fs *Fs) Mkfs() afero.Fs {
 	afs := afero.NewMemMapFs()
-	// work around a bug in afero where "/" has empty permissions, so it's
-	// not marked as a directory
-	afs.Chmod("/", 0o755|os.ModeDir)
 	for _, spec := range fs.files {
-		// work around a bug in afero where MkdirAll doesn't properly
-		// create intermediate directories: they end up with empty
-		// permissions, and so they are not marked as directories
-		//
-		// so instead we manually create all the intermediate
-		// directories
-		for _, dir := range allDirs(spec.Path) {
-			if ex, _ := afero.DirExists(afs, dir); !ex {
-				afs.Mkdir(dir, 0o755)
-			}
-		}
+		afs.MkdirAll(filepath.Dir(spec.Path), 0o755)
 		f, _ := afs.Create(spec.Path)
 		genFile(f, spec.Size, spec.Seed)
 	}
