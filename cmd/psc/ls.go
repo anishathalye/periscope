@@ -16,11 +16,12 @@ var lsFlags struct {
 }
 
 var lsCmd = &cobra.Command{
-	Use:     "ls [path ...]",
-	Short:   "List a directory",
-	Args:    cobra.ArbitraryArgs,
-	PreRunE: lsPreRun,
-	RunE:    lsRun,
+	Use:               "ls [path ...]",
+	Short:             "List a directory",
+	Args:              cobra.ArbitraryArgs,
+	ValidArgsFunction: lsValidArgs,
+	PreRunE:           lsPreRun,
+	RunE:              lsRun,
 }
 
 func init() {
@@ -30,6 +31,10 @@ func init() {
 	lsCmd.Flags().BoolVarP(&lsFlags.unique, "unique", "u", false, "show only unique files")
 	lsCmd.Flags().BoolVarP(&lsFlags.relative, "relative", "r", false, "show duplicates using relative paths")
 	rootCmd.AddCommand(lsCmd)
+}
+
+func lsValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveFilterDirs
 }
 
 func lsPreRun(cmd *cobra.Command, paths []string) error {

@@ -11,11 +11,16 @@ var scanCmd = &cobra.Command{
 	Short:                 "Scan paths for duplicates",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.ArbitraryArgs,
+	ValidArgsFunction:     scanValidArgs,
 	RunE:                  scanRun,
 }
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
+}
+
+func scanValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveFilterDirs
 }
 
 func scanRun(cmd *cobra.Command, paths []string) error {

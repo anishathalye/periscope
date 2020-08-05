@@ -16,11 +16,12 @@ var rmFlags struct {
 }
 
 var rmCmd = &cobra.Command{
-	Use:     "rm path ...",
-	Short:   "Remove duplicates",
-	Args:    cobra.MinimumNArgs(1),
-	PreRunE: rmPreRun,
-	RunE:    rmRun,
+	Use:               "rm path ...",
+	Short:             "Remove duplicates",
+	Args:              cobra.MinimumNArgs(1),
+	ValidArgsFunction: rmValidArgs,
+	PreRunE:           rmPreRun,
+	RunE:              rmRun,
 }
 
 func init() {
@@ -30,6 +31,10 @@ func init() {
 	rmCmd.Flags().VarP(&rmFlags.contained, "contained", "c", "delete only files that have a duplicate here")
 	rmCmd.Flags().BoolVarP(&rmFlags.arbitrary, "arbitrary", "a", false, "arbitrarily choose a file to leave out when deleting a set with no other duplicates")
 	rootCmd.AddCommand(rmCmd)
+}
+
+func rmValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveDefault
 }
 
 func rmPreRun(cmd *cobra.Command, paths []string) error {

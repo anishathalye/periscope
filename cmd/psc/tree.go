@@ -11,15 +11,20 @@ var treeFlags struct {
 }
 
 var treeCmd = &cobra.Command{
-	Use:   "tree [path]",
-	Short: "List all duplicates recursively",
-	Args:  cobra.MaximumNArgs(1),
-	RunE:  treeRun,
+	Use:               "tree [path]",
+	Short:             "List all duplicates recursively",
+	Args:              cobra.MaximumNArgs(1),
+	ValidArgsFunction: treeValidArgs,
+	RunE:              treeRun,
 }
 
 func init() {
 	treeCmd.Flags().BoolVarP(&treeFlags.all, "all", "a", false, "show hidden files/directories")
 	rootCmd.AddCommand(treeCmd)
+}
+
+func treeValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveFilterDirs
 }
 
 func treeRun(cmd *cobra.Command, paths []string) error {

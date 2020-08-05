@@ -11,11 +11,16 @@ var summaryCmd = &cobra.Command{
 	Short:                 "Report scan result summary",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
+	ValidArgsFunction:     summaryValidArgs,
 	RunE:                  summaryRun,
 }
 
 func init() {
 	rootCmd.AddCommand(summaryCmd)
+}
+
+func summaryValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
 func summaryRun(cmd *cobra.Command, _ []string) error {

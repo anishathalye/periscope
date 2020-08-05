@@ -12,11 +12,16 @@ var versionCmd = &cobra.Command{
 	Short:                 "Show version number",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
+	ValidArgsFunction:     versionValidArgs,
 	RunE:                  versionRun,
 }
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+}
+
+func versionValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
 var (

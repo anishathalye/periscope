@@ -11,11 +11,16 @@ var reportCmd = &cobra.Command{
 	Short:                 "Report scan results",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
+	ValidArgsFunction:     reportValidArgs,
 	RunE:                  reportRun,
 }
 
 func init() {
 	rootCmd.AddCommand(reportCmd)
+}
+
+func reportValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveNoFileComp
 }
 
 func reportRun(cmd *cobra.Command, _ []string) error {
