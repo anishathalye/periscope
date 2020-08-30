@@ -22,12 +22,14 @@ func (ps *Periscope) Report(options *ReportOptions) herror.Interface {
 	if err != nil {
 		return err
 	}
-	for _, set := range sets {
+	for i, set := range sets {
 		fmt.Fprintf(ps.outStream, "%s\n", humanize.Bytes(uint64(set.Size)))
 		for _, info := range set.Paths {
 			fmt.Fprintf(ps.outStream, "  %s\n", info)
 		}
-		fmt.Fprintf(ps.outStream, "\n")
+		if i != len(sets)-1 {
+			fmt.Fprintf(ps.outStream, "\n")
+		}
 	}
 	return nil
 }
