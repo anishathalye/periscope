@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/anishathalye/periscope"
+	"github.com/anishathalye/periscope/herror"
 
 	"github.com/spf13/cobra"
 )
@@ -11,13 +12,15 @@ var rmFlags struct {
 	verbose   bool
 	dryRun    bool
 	contained optionPath
+	arbitrary bool
 }
 
 var rmCmd = &cobra.Command{
-	Use:   "rm path ...",
-	Short: "Remove duplicates",
-	Args:  cobra.MinimumNArgs(1),
-	RunE:  rmRun,
+	Use:     "rm path ...",
+	Short:   "Remove duplicates",
+	Args:    cobra.MinimumNArgs(1),
+	PreRunE: rmPreRun,
+	RunE:    rmRun,
 }
 
 func init() {
@@ -25,7 +28,15 @@ func init() {
 	rmCmd.Flags().BoolVarP(&rmFlags.verbose, "verbose", "v", false, "list files being deleted")
 	rmCmd.Flags().BoolVarP(&rmFlags.dryRun, "dry-run", "n", false, "do not delete files, but show files eligible for deletion")
 	rmCmd.Flags().VarP(&rmFlags.contained, "contained", "c", "delete only files that have a duplicate here")
+	rmCmd.Flags().BoolVarP(&rmFlags.arbitrary, "arbitrary", "a", false, "arbitrarily choose a file to leave out when deleting a set with no other duplicates")
 	rootCmd.AddCommand(rmCmd)
+}
+
+func rmPreRun(cmd *cobra.Command, paths []string) error {
+	if rmFlags.arbitrary && rmFlags.contained.valid {
+		return herror.User(nil, "--arbitrary and --contained can't be used together")
+	}
+	return nil
 }
 
 func rmRun(cmd *cobra.Command, paths []string) error {
@@ -41,6 +52,7 @@ func rmRun(cmd *cobra.Command, paths []string) error {
 		DryRun:       rmFlags.dryRun,
 		HasContained: rmFlags.contained.valid,
 		Contained:    rmFlags.contained.value,
+		Arbitrary:    rmFlags.arbitrary,
 	}
 	return ps.Rm(paths, options)
 }

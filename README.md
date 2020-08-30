@@ -136,16 +136,21 @@ Shows information about a single file's duplicates. Like with `psc ls`, the
 
 **`psc rm` deletes duplicates**
 
-Deletes duplicates but not unique files. This command makes use of the
-database, but it double-checks files and their copies before it deletes
-anything, so a stale duplicate database will not result in data loss. The `-n`
-flag will perform a dry run, listing files that would be deleted but not
-actually deleting anything. `-r` deletes duplicates recursively. The
-`--contained <path>` argument gives more fine-grained control over deletion:
-files are only deleted if they have a duplicate _in the given location_. This
-is useful, for example, for deleting files from a "to organize" directory only
-if they are also contained in the "organized" directory, as in the demo video
-above.
+Deletes duplicates but not unique files; no way of invoking this command will
+delete unique files. This command makes use of the database, but it
+double-checks files and their copies before it deletes anything, so a stale
+duplicate database will not result in data loss. The `-n` flag will perform a
+dry run, listing files that would be deleted but not actually deleting
+anything. `-r` deletes duplicates recursively. The `--contained <path>`
+argument gives more fine-grained control over deletion: files are only deleted
+if they have a duplicate _in the given location_. This is useful, for example,
+for deleting files from a "to organize" directory only if they are also
+contained in the "organized" directory, as in the demo video above. By default,
+`psc rm` does not delete any files when it's given a set where there are no
+duplicates outside the set: for example, if files "/a/x1" and "/a/x2" are
+duplicates, recursively removing "/a" will leave both files untouched. Passing
+the `--arbitrary` flag will result in such duplicates being handled by
+arbitrarily choosing one file to save and deleting the rest.
 
 ## Installation
 

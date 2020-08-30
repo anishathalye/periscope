@@ -16,6 +16,7 @@ type RmOptions struct {
 	DryRun       bool
 	HasContained bool
 	Contained    string
+	Arbitrary    bool
 }
 
 func (ps *Periscope) Rm(paths []string, options *RmOptions) herror.Interface {
@@ -110,7 +111,6 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 			if singleFile {
 				return err
 			}
-			delete(candidates, path) // this is safe to do while iterating over the map
 			continue
 		}
 		infos[absPath] = info
@@ -118,6 +118,7 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 		path0 = path // some arbitrary path
 		absPath0 = absPath
 	}
+	// `candidates` is never used after this point
 	set, _ := ps.db.Lookup(absPath0)
 	// ensure all candidates contained in set
 	duplicateSet := make(map[string]struct{})
@@ -138,6 +139,18 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 			return herror.Silent()
 		}
 		return nil
+	}
+
+	// leave out one of the candidates if no duplicates elsewhere and arbitrary option is given
+	if len(duplicateSet) == len(absPaths) && options.Arbitrary {
+		// arbitrarily choose a single path to avoid deleting;
+		// don't choose path0/absPath0 because we use those later
+		for absPath := range absPaths {
+			if absPath != absPath0 {
+				delete(absPaths, absPath) // this is safe to do while iterating over the map
+				break
+			}
+		}
 	}
 
 	// the rest of this function is the most critical code in this entire

@@ -212,7 +212,7 @@ func TestRmMultiplePartialFail(t *testing.T) {
 	}
 }
 
-func TestRmContainsFile(t *testing.T) {
+func TestRmContainedFile(t *testing.T) {
 	fs := testfs.Read(`
 /.bar [100 4]
 /.foo [100 4]
@@ -271,7 +271,7 @@ func TestRmNoContainsFile(t *testing.T) {
 	}
 }
 
-func TestRmContainsRecursive(t *testing.T) {
+func TestRmContainedRecursive(t *testing.T) {
 	fs := testfs.Read(`
 /u/a [100 1]
 /u/b [100 2]
@@ -297,7 +297,7 @@ func TestRmContainsRecursive(t *testing.T) {
 	}
 }
 
-func TestRmContainsTryDelete(t *testing.T) {
+func TestRmContainedTryDelete(t *testing.T) {
 	fs := testfs.Read(`
 /u/a [100 1]
 /u/b [100 2]
@@ -633,5 +633,50 @@ func TestRmContainedCommonPrefix(t *testing.T) {
 	`)
 	if !testfs.Equal(fs, expected) {
 		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmArbitrary(t *testing.T) {
+	fs := testfs.Read(`
+/a/x [1000 1]
+/a/x2 [1000 1]
+/a/x3 [1000 1]
+/a/y [2000 2]
+/a/y2 [2000 2]
+/a/z [2000 3]
+/b/y [2000 2]
+/b/z [2000 3]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/a"}, &RmOptions{Recursive: true, Arbitrary: true})
+	check(t, err)
+	if ex, _ := afero.Exists(fs, "/a/y"); ex {
+		t.Fatal("expected '/a/y' to be deleted")
+	}
+	if ex, _ := afero.Exists(fs, "/a/y2"); ex {
+		t.Fatal("expected '/a/y2' to be deleted")
+	}
+	if ex, _ := afero.Exists(fs, "/b/y"); !ex {
+		t.Fatal("expected '/b/y' to exist")
+	}
+	if ex, _ := afero.Exists(fs, "/a/z"); ex {
+		t.Fatal("expected '/a/z' to be deleted")
+	}
+	if ex, _ := afero.Exists(fs, "/b/z"); !ex {
+		t.Fatal("expected '/b/z' to exist")
+	}
+	x := 0
+	if ex, _ := afero.Exists(fs, "/a/x"); ex {
+		x++
+	}
+	if ex, _ := afero.Exists(fs, "/a/x2"); ex {
+		x++
+	}
+	if ex, _ := afero.Exists(fs, "/a/x3"); ex {
+		x++
+	}
+	if x != 1 {
+		t.Fatal("expected exactly one of {'/a/x', '/a/x2', '/a/x3'} to exist")
 	}
 }
