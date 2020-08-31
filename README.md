@@ -154,6 +154,12 @@ arbitrarily choosing one file to save and deleting the rest.
 
 ## Installation
 
+**Install with [Homebrew](https://brew.sh/) (on macOS):**
+
+```bash
+brew install periscope
+```
+
 **Download a binary release:**
 [Periscope releases](https://github.com/anishathalye/periscope/releases).
 
