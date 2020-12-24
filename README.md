@@ -1,4 +1,4 @@
-# Periscope [[![Build Status](https://travis-ci.com/anishathalye/periscope.svg?branch=master)](https://travis-ci.com/anishathalye/periscope)]
+# Periscope [![Build Status](https://github.com/anishathalye/periscope/workflows/CI/badge.svg)](https://github.com/anishathalye/periscope/actions?query=workflow%3ACI)
 <!--
 Other useful stuff:
 
