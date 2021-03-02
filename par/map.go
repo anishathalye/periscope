@@ -3,6 +3,7 @@ package par
 import (
 	"reflect"
 	"runtime"
+	"sync"
 )
 
 var defaultWorkers = runtime.NumCPU()
@@ -28,11 +29,12 @@ func MapN(v interface{}, workers int, mapper MapFunc) <-chan interface{} {
 	emit := func(x interface{}) {
 		results <- x
 	}
-	done := make(chan struct{})
+	var wg sync.WaitGroup
 	// spawn workers
 	for i := 0; i < workers; i++ {
+		wg.Add(1)
 		go func() {
-			defer func() { done <- struct{}{} }()
+			defer wg.Done()
 			for t := range tasks {
 				mapper(t.key, t.value, emit)
 			}
@@ -62,17 +64,9 @@ func MapN(v interface{}, workers int, mapper MapFunc) <-chan interface{} {
 			}
 		}
 		close(tasks)
-	}()
-	// close results when done
-	go func() {
-		ndone := 0
-		for range done {
-			ndone++
-			if ndone >= workers {
-				close(results)
-				return
-			}
-		}
+		// wait for workers, close results when done
+		wg.Wait()
+		close(results)
 	}()
 	return results
 }
