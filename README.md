@@ -197,5 +197,5 @@ issue to discuss your proposed change.
 
 ## License
 
-Copyright (c) 2020 Anish Athalye (me@anishathalye.com). Released under GPLv3.
+Copyright (c) 2020-2021 Anish Athalye (me@anishathalye.com). Released under GPLv3.
 See [LICENSE.txt](LICENSE.txt) for details.
