@@ -76,7 +76,7 @@ func New(options *Options) (*Periscope, herror.Interface) {
 
 func (ps *Periscope) progressBar(total int, template string) *pb.ProgressBar {
 	bar := pb.New(total)
-	bar.SetRefreshRate(100 * time.Millisecond)
+	bar.SetRefreshRate(25 * time.Millisecond)
 	bar.SetTemplateString(template)
 	bar.SetMaxWidth(99)
 	bar.Start()
