@@ -325,6 +325,28 @@ func (s *Session) Remove(path string) herror.Interface {
 	return nil
 }
 
+func (s *Session) RemoveAll(paths []string) herror.Interface {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return herror.Internal(err, "")
+	}
+	stmt, err := tx.Prepare("DELETE FROM duplicates WHERE path = ?")
+	if err != nil {
+		return herror.Internal(err, "")
+	}
+	defer stmt.Close()
+	for _, path := range paths {
+		if _, err := stmt.Exec(path); err != nil {
+			return herror.Internal(err, "")
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		return herror.Internal(err, "")
+	}
+	return nil
+}
+
 func (s *Session) PruneSingletons() herror.Interface {
 	_, err := s.db.Exec(`
 	WITH singleton_tags AS

@@ -39,11 +39,9 @@ func (ps *Periscope) Refresh(options *RefreshOptions) herror.Interface {
 	}
 	// note: we can't actually delete the files while scanning because
 	// we're doing a streaming read from the database
-	for _, path := range gone {
-		err := ps.db.Remove(path)
-		if err != nil {
-			return err
-		}
+	err = ps.db.RemoveAll(gone)
+	if err != nil {
+		return err
 	}
 	err = ps.db.PruneSingletons()
 	if err != nil {
