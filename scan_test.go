@@ -92,8 +92,8 @@ func TestScanSameStart(t *testing.T) {
 	fs := testfs.New(nil).Mkfs()
 	s1 := append(bytes.Repeat([]byte{'x'}, 10485760), byte('1'))
 	s2 := append(bytes.Repeat([]byte{'x'}, 10485760), byte('2'))
-	ioutil.WriteFile("/a", s1, 0o644)
-	ioutil.WriteFile("/b", s2, 0o644)
+	afero.WriteFile(fs, "/a", s1, 0o644)
+	afero.WriteFile(fs, "/b", s2, 0o644)
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
@@ -108,8 +108,25 @@ func TestScanPrefix(t *testing.T) {
 	fs := testfs.New(nil).Mkfs()
 	s1 := bytes.Repeat([]byte{'x'}, 10485760)
 	s2 := bytes.Repeat([]byte{'x'}, 10485761)
-	ioutil.WriteFile("/a", s1, 0o644)
-	ioutil.WriteFile("/b", s2, 0o644)
+	afero.WriteFile(fs, "/a", s1, 0o644)
+	afero.WriteFile(fs, "/b", s2, 0o644)
+	ps, _, _ := newTest(fs)
+	err := ps.Scan([]string{"/"}, &ScanOptions{})
+	check(t, err)
+	got, err := ps.db.AllDuplicates()
+	check(t, err)
+	if len(got) != 0 {
+		t.Fatalf("expected to find no duplicates, got %d", len(got))
+	}
+}
+
+func TestScanPrefixSameSize(t *testing.T) {
+	fs := testfs.New(nil).Mkfs()
+	s1 := bytes.Repeat([]byte{'x'}, 10485760)
+	s2 := bytes.Repeat([]byte{'x'}, 10485760)
+	s2[123456] = 0
+	afero.WriteFile(fs, "/a", s1, 0o644)
+	afero.WriteFile(fs, "/b", s2, 0o644)
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
