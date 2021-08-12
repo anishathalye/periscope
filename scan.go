@@ -13,6 +13,8 @@ import (
 )
 
 type ScanOptions struct {
+	Minimum uint64
+	Maximum uint64
 }
 
 func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface {
@@ -25,7 +27,7 @@ func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface
 		}
 		absPaths[i] = abs
 	}
-	dupes, done := ps.findDuplicates(absPaths)
+	dupes, done := ps.findDuplicates(absPaths, options)
 	tx, err := ps.db.Begin()
 	if err != nil {
 		return err
@@ -65,7 +67,7 @@ type searchResult struct {
 //
 // we do this here so that there are no db reads in the rest of findDuplicates,
 // so we can do a streaming write into the db without concurrent reads
-func (ps *Periscope) findFilesBySize(paths []string) (map[int64][]searchResult, int) {
+func (ps *Periscope) findFilesBySize(paths []string, options *ScanOptions) (map[int64][]searchResult, int) {
 	sizeToInfos := make(map[int64][]searchResult)
 	files := 0
 
@@ -81,7 +83,7 @@ func (ps *Periscope) findFilesBySize(paths []string) (map[int64][]searchResult, 
 				return nil
 			}
 			size := info.Size()
-			if size > 0 {
+			if size > int64(options.Minimum) && (options.Maximum == 0 || size <= int64(options.Maximum)) {
 				if len(sizeToInfos[size]) == 0 {
 					// find all relevant files from the database, skipping the
 					// ones that are included in paths; we only do this once per
@@ -118,8 +120,8 @@ func (ps *Periscope) findFilesBySize(paths []string) (map[int64][]searchResult, 
 }
 
 // paths consists of absolute paths with no symlinks
-func (ps *Periscope) findDuplicates(searchPaths []string) (<-chan interface{}, func()) {
-	sizeToInfos, files := ps.findFilesBySize(searchPaths)
+func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) (<-chan interface{}, func()) {
+	sizeToInfos, files := ps.findFilesBySize(searchPaths, options)
 
 	bar := ps.progressBar(files, `analyzing: {{ counters . }} {{ bar . "[" "=" ">" " " "]" }} {{ etime . }} {{ rtime . "ETA %s" "%.0s" " " }} `)
 	done := func() {

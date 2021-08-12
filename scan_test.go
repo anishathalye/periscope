@@ -55,6 +55,84 @@ func TestScanZeroLength(t *testing.T) {
 	}
 }
 
+func TestScanMinimumSize(t *testing.T) {
+	fs := testfs.Read(`
+/.bar [100 4]
+/.foo [100 4]
+/a [1024 0]
+/b [1024 1]
+/c/d [4096 2]
+/c/x [10248 3]
+/x [10248 3]
+/c/.d/foo [100 4]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	err := ps.Scan([]string{"/"}, &ScanOptions{Minimum: 123})
+	check(t, err)
+	got, err := ps.db.AllDuplicates()
+	check(t, err)
+	expected := []db.DuplicateSet{{
+		{"/c/x", 10248, nil, nil},
+		{"/x", 10248, nil, nil},
+	}}
+	checkEquivalentDuplicateSet(t, expected, got)
+}
+
+func TestScanMaximumSize(t *testing.T) {
+	fs := testfs.Read(`
+/.bar [100 4]
+/.foo [100 4]
+/a [1024 0]
+/b [1024 1]
+/c/d [4096 2]
+/c/x [10248 3]
+/x [10248 3]
+/c/.d/foo [100 4]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	err := ps.Scan([]string{"/"}, &ScanOptions{Maximum: 1000})
+	check(t, err)
+	got, err := ps.db.AllDuplicates()
+	check(t, err)
+	expected := []db.DuplicateSet{{
+		{"/.bar", 100, nil, nil},
+		{"/.foo", 100, nil, nil},
+		{"/c/.d/foo", 100, nil, nil},
+	}}
+	checkEquivalentDuplicateSet(t, expected, got)
+}
+
+func TestScanMinimumMaximumSize(t *testing.T) {
+	fs := testfs.Read(`
+/small1 [10 1]
+/small2 [10 1]
+/.bar [100 4]
+/.foo [100 4]
+/a [1024 0]
+/b [1024 1]
+/c/d [4096 2]
+/c/x [10248 3]
+/x [10248 3]
+/c/.d/foo [100 4]
+/big1 [1000000 1]
+/big2 [1000000 1]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	err := ps.Scan([]string{"/"}, &ScanOptions{Minimum: 50, Maximum: 20000})
+	check(t, err)
+	got, err := ps.db.AllDuplicates()
+	check(t, err)
+	expected := []db.DuplicateSet{{
+		{"/c/x", 10248, nil, nil},
+		{"/x", 10248, nil, nil},
+	}, {
+		{"/.bar", 100, nil, nil},
+		{"/.foo", 100, nil, nil},
+		{"/c/.d/foo", 100, nil, nil},
+	}}
+	checkEquivalentDuplicateSet(t, expected, got)
+}
+
 func TestScanNoAccess(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()

@@ -6,16 +6,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var scanFlags struct {
+	minimum size
+	maximum size
+}
+
 var scanCmd = &cobra.Command{
-	Use:                   "scan [path ...]",
-	Short:                 "Scan paths for duplicates",
-	DisableFlagsInUseLine: true,
-	Args:                  cobra.ArbitraryArgs,
-	ValidArgsFunction:     scanValidArgs,
-	RunE:                  scanRun,
+	Use:               "scan [path ...]",
+	Short:             "Scan paths for duplicates",
+	Args:              cobra.ArbitraryArgs,
+	ValidArgsFunction: scanValidArgs,
+	RunE:              scanRun,
 }
 
 func init() {
+	scanCmd.Flags().VarP(&scanFlags.minimum, "minimum", "m", "minimum file size to scan")
+	scanCmd.Flags().VarP(&scanFlags.maximum, "maximum", "M", "maximum file size to scan")
 	rootCmd.AddCommand(scanCmd)
 }
 
@@ -33,5 +39,9 @@ func scanRun(cmd *cobra.Command, paths []string) error {
 	if len(paths) == 0 {
 		paths = []string{"."}
 	}
-	return ps.Scan(paths, &periscope.ScanOptions{})
+	options := &periscope.ScanOptions{
+		Minimum: scanFlags.minimum.value,
+		Maximum: scanFlags.maximum.value,
+	}
+	return ps.Scan(paths, options)
 }
