@@ -132,7 +132,6 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 	return par.MapN(sizeToInfos, scanThreads, func(k, v interface{}, emit func(x interface{})) {
 		size := k.(int64)
 		searchResults := v.([]searchResult)
-		defer bar.Add(len(searchResults))
 
 		// files may appear multiple times, if the same directory is repeated in the
 		// arguments to scan; skip those
@@ -144,6 +143,7 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 		for _, result := range searchResults {
 			path := result.info.Path
 			if _, ok := seen[path]; ok {
+				bar.Add(1) // no more work to do for skipped search results
 				continue
 			}
 			seen[path] = struct{}{}
@@ -161,6 +161,7 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 			if updated[0] {
 				emit(infos[0])
 			}
+			bar.Add(1)
 			return
 		}
 
@@ -177,7 +178,8 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 				hash, err := ps.hashPartial(info.Path, szBuf)
 				if err != nil {
 					log.Printf("hashPartial() returned error: %s", err)
-					continue // ignore this file
+					bar.Add(1) // ignored; no more work to do for this file
+					continue   // ignore this file
 				}
 				info.ShortHash = hash
 				updated[i] = true
@@ -191,6 +193,7 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 		for _, indices := range byShortHash {
 			if len(indices) <= 1 {
 				// no need to compute full hash
+				bar.Add(len(indices)) // no more work to do for these
 				continue
 			}
 			// collide on short hash; hash full file
@@ -200,11 +203,13 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 					hash, err := ps.hashFile(info.Path)
 					if err != nil {
 						log.Printf("hashPartial() returned error: %s", err)
-						continue // ignore this file
+						bar.Add(1) // ignored; no more work to do for this file
+						continue   // ignore this file
 					}
 					info.FullHash = hash
 					updated[index] = true
 				}
+				bar.Add(1)
 			}
 		}
 
