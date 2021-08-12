@@ -358,13 +358,13 @@ func TestRemoveDir(t *testing.T) {
 		{"/goodbye/w", 1000, []byte("b"), []byte("bb")},
 		{"/goodbyeasdf", 1000, []byte("b"), []byte("bb")},
 	})
-	check(t, db.RemoveDir("/hello"))
+	check(t, db.RemoveDir("/hello", 0, 0))
 	got, err := db.AllInfos()
 	check(t, err)
 	if len(got) != 4 {
 		t.Fatalf("expected 4 infos, got %d", len(got))
 	}
-	check(t, db.RemoveDir("/goodbye/"))
+	check(t, db.RemoveDir("/goodbye/", 0, 0))
 	got, err = db.AllInfos()
 	check(t, err)
 	if len(got) != 2 {

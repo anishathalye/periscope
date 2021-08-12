@@ -13,8 +13,8 @@ import (
 )
 
 type ScanOptions struct {
-	Minimum uint64
-	Maximum uint64
+	Minimum int64
+	Maximum int64
 }
 
 func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface {
@@ -34,7 +34,7 @@ func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface
 	}
 	// remove previously scanned files in paths we are now searching
 	for _, path := range absPaths {
-		tx.RemoveDir(path)
+		tx.RemoveDir(path, options.Minimum, options.Maximum)
 	}
 	// add all the new things we've found
 	for info := range dupes {

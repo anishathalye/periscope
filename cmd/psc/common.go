@@ -4,6 +4,7 @@ import (
 	"github.com/anishathalye/periscope/herror"
 
 	"fmt"
+	"math"
 
 	"github.com/dustin/go-humanize"
 )
@@ -28,7 +29,7 @@ func (op *optionPath) Type() string {
 }
 
 type size struct {
-	value uint64
+	value int64
 }
 
 func (s *size) Set(x string) error {
@@ -36,7 +37,10 @@ func (s *size) Set(x string) error {
 	if err != nil {
 		return herror.UserF(nil, "cannot parse as a number of bytes")
 	}
-	s.value = n
+	s.value = int64(n)
+	if s.value < 0 {
+		s.value = math.MaxInt64
+	}
 	return nil
 }
 

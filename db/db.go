@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 
@@ -490,18 +491,27 @@ func (s *Session) Remove(path string) herror.Interface {
 	return nil
 }
 
-// Deletes all files matching the given directory prefix from the database.
+// Deletes all files matching the given directory prefix from the database,
+// with sizes in the specified range.
 //
-// This does not just match based on prefix, it interprets the prefix as a
-// directory, and only deletes files under the given directory. This means that
-// it won't accidentally match file names (or other directory names) where the
-// prefix is common, e.g. deleting "/a" won't delete file "/aa" or contents
-// under a directory "/aa".
-func (s *Session) RemoveDir(dir string) herror.Interface {
+// A max size of 0 is interpreted as infinity. This does not just match based
+// on prefix, it interprets the prefix as a directory, and only deletes files
+// under the given directory. This means that it won't accidentally match file
+// names (or other directory names) where the prefix is common, e.g. deleting
+// "/a" won't delete file "/aa" or contents under a directory "/aa".
+func (s *Session) RemoveDir(dir string, min, max int64) herror.Interface {
 	if dir[len(dir)-1] != os.PathSeparator {
 		dir = dir + string(os.PathSeparator)
 	}
-	_, err := s.exec("DELETE FROM file_info WHERE SUBSTR(path, 1, ?) = ?", len(dir), dir)
+	if max <= 0 {
+		max = math.MaxInt64
+	}
+	_, err := s.exec(`
+	DELETE FROM file_info
+	WHERE SUBSTR(path, 1, ?) = ?
+		AND size > ?
+		AND size <= ?
+	`, len(dir), dir, min, max)
 	if err != nil {
 		return herror.Internal(err, "")
 	}
