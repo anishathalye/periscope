@@ -37,18 +37,18 @@ func (ps *Periscope) info1(path string, options *InfoOptions) herror.Interface {
 	if herr != nil {
 		return herr
 	}
-	nCopies := len(dupeSet.Paths)
+	nCopies := len(dupeSet)
 	nDupes := 0
 	if nCopies > 1 {
 		nDupes = nCopies - 1
 	}
 	fmt.Fprintf(ps.outStream, "%d %s\n", nDupes, path)
 	dirPath := filepath.Dir(absPath)
-	for _, dupe := range dupeSet.Paths {
-		if dupe != absPath {
-			showPath := dupe
+	for _, info := range dupeSet {
+		if info.Path != absPath {
+			showPath := info.Path
 			if options.Relative {
-				showPath = relPath(dirPath, dupe)
+				showPath = relPath(dirPath, info.Path)
 			}
 			fmt.Fprintf(ps.outStream, "  %s\n", showPath)
 		}

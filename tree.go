@@ -17,11 +17,11 @@ func (ps *Periscope) Tree(root string, options *TreeOptions) herror.Interface {
 		return err
 	}
 	w := tabwriter.NewWriter(ps.outStream, 0, 0, 1, ' ', tabwriter.DiscardEmptyColumns)
-	c, herr := ps.db.LookupAll(absRoot, options.All)
+	c, herr := ps.db.LookupAllC(absRoot, options.All)
 	if herr != nil {
 		return herr
 	}
-	for _, dupe := range c {
+	for dupe := range c {
 		_, _, err := ps.checkFile(dupe.Path, true, false, "", true, false)
 		if err != nil {
 			// something has changed

@@ -94,7 +94,7 @@ func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, opti
 		if err != nil {
 			return err
 		}
-		nDupes := len(dupeSet.Paths) - 1
+		nDupes := len(dupeSet) - 1
 		if nDupes > 0 {
 			desc = strconv.Itoa(nDupes)
 		}
@@ -102,20 +102,20 @@ func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, opti
 		desc = "?"
 	}
 	show := true
-	if options.Unique && len(dupeSet.Paths) > 1 {
+	if options.Unique && len(dupeSet) > 1 {
 		show = false
 	}
-	if options.Duplicate && len(dupeSet.Paths) < 2 {
+	if options.Duplicate && len(dupeSet) < 2 {
 		show = false
 	}
 	if show {
 		fmt.Fprintf(out, "%s\v%s\n", desc, file.Name())
-		if options.Verbose && len(dupeSet.Paths) > 1 {
-			for _, dupe := range dupeSet.Paths {
-				if dupe != fullPath {
-					showPath := dupe
+		if options.Verbose && len(dupeSet) > 1 {
+			for _, info := range dupeSet {
+				if info.Path != fullPath {
+					showPath := info.Path
 					if options.Relative {
-						showPath = relPath(dirPath, dupe)
+						showPath = relPath(dirPath, info.Path)
 					}
 					fmt.Fprintf(out, "\v  %s\n", showPath)
 				}

@@ -52,10 +52,6 @@ func (ps *Periscope) Rm(paths []string, options *RmOptions) herror.Interface {
 			herr = err
 		}
 	}
-	err := ps.db.PruneSingletons()
-	if err != nil {
-		return err
-	}
 	return herr
 }
 
@@ -68,18 +64,19 @@ func (ps *Periscope) removeDirectory(path string, absPath string, options *RmOpt
 		fmt.Fprintf(ps.errStream, "cannot remove '%s': must specify -r, --recursive to delete directories\n", path)
 		return herror.Silent()
 	}
-	c, herr := ps.db.LookupAll(absPath, true)
+	c, herr := ps.db.LookupAllC(absPath, true)
 	if herr != nil {
 		return herr
 	}
-	byTag := make(map[int64]map[string]struct{})
-	for _, dupInfo := range c {
-		if byTag[dupInfo.Tag] == nil {
-			byTag[dupInfo.Tag] = make(map[string]struct{})
+	byHash := make(map[[HashSize]byte]map[string]struct{})
+	for dupInfo := range c {
+		hash := hashToArray(dupInfo.FullHash)
+		if byHash[hash] == nil {
+			byHash[hash] = make(map[string]struct{})
 		}
-		byTag[dupInfo.Tag][dupInfo.Path] = struct{}{}
+		byHash[hash][dupInfo.Path] = struct{}{}
 	}
-	for _, candidates := range byTag {
+	for _, candidates := range byHash {
 		err := ps.remove1(candidates, options, false, path, absContained)
 		if err != nil {
 			herr = err
@@ -122,8 +119,8 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 	set, _ := ps.db.Lookup(absPath0)
 	// ensure all candidates contained in set
 	duplicateSet := make(map[string]struct{})
-	for _, path := range set.Paths {
-		duplicateSet[path] = struct{}{}
+	for _, info := range set {
+		duplicateSet[info.Path] = struct{}{}
 	}
 	allContained := true
 	for path := range absPaths {

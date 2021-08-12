@@ -1,6 +1,7 @@
 package testfs
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -123,5 +124,25 @@ func TestDirectoriesDeep(t *testing.T) {
 	})
 	if !fs.Equal(expected) {
 		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), fs.ShowIndent(2))
+	}
+}
+
+func TestSameSeedCommonPrefix(t *testing.T) {
+	fs := Read(`
+/a [10000 1]
+/b [12345 1]
+	`).Mkfs()
+	a, _ := fs.Open("/a")
+	var aBuf bytes.Buffer
+	aBuf.ReadFrom(a)
+	aBytes := aBuf.Bytes()
+	b, _ := fs.Open("/b")
+	var bBuf bytes.Buffer
+	bBuf.ReadFrom(b)
+	bBytes := bBuf.Bytes()
+	for i := 0; i < 9000; i++ {
+		if aBytes[i] != bBytes[i] {
+			t.Fatal("prefix mismatch")
+		}
 	}
 }

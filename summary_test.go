@@ -23,8 +23,8 @@ func TestSummaryBasic(t *testing.T) {
 	check(t, err)
 	got := strings.TrimSpace(out.String())
 	expected := strings.TrimSpace(`
-  tracked     5
-   unique     2
+  tracked     7
+   unique     4
 duplicate     3
  overhead 14 MB
 	`)

@@ -62,9 +62,9 @@ func (ps *Periscope) Report(options *ReportOptions) herror.Interface {
 		if !first {
 			fmt.Fprintf(ps.outStream, "\n")
 		}
-		fmt.Fprintf(ps.outStream, "%s\n", humanize.Bytes(uint64(set.Size)))
-		for _, info := range set.Paths {
-			fmt.Fprintf(ps.outStream, "  %s\n", info)
+		fmt.Fprintf(ps.outStream, "%s\n", humanize.Bytes(uint64(set[0].Size))) // all files within a set have the same size
+		for _, info := range set {
+			fmt.Fprintf(ps.outStream, "  %s\n", info.Path)
 		}
 		first = false
 	}

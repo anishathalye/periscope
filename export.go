@@ -36,10 +36,15 @@ type exportResult struct {
 
 func (ps *Periscope) jsonExport(c <-chan db.DuplicateSet) herror.Interface {
 	duplicates := make([]exportDuplicateInfo, 0)
-	for dupe := range c {
+	for set := range c {
+		size := set[0].Size // all files within a set are the same size
+		var paths []string
+		for _, info := range set {
+			paths = append(paths, info.Path)
+		}
 		duplicates = append(duplicates, exportDuplicateInfo{
-			Paths: dupe.Paths,
-			Size:  dupe.Size,
+			Paths: paths,
+			Size:  size,
 		})
 	}
 	res := exportResult{

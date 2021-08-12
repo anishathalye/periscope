@@ -35,9 +35,11 @@ duplicates without worrying about accidentally losing data.
 
 Start with `psc scan` to scan folders for duplicates. Once you run this, you
 shouldn't need to run it again while looking at and deleting duplicates, unless
-you move files around. If you delete files manually (rather than with `psc
-rm`), you can make Periscope detect deletions with `psc refresh`, which runs
-much faster than a full scan.
+you move files around. If you delete files manually (rather than with `psc rm`),
+you can make Periscope detect deletions with `psc refresh`, which runs much
+faster than a full scan. `psc scan` is incremental, so if you want to scan a new
+directory or re-analyze one that was already scanned, you can always run the
+command again.
 
 **Understand duplicates**
 
@@ -77,8 +79,8 @@ help on a specific command.
 **`psc scan` scans for duplicates**
 
 Scans paths for duplicates and populates the database with information about
-duplicates. Scans the current directory if given no argument. This command
-clears all information from previous scans.
+duplicates. Scans the current directory if given no argument. Scanning is
+incremental; if you want to start from scratch, run `psc finish` first.
 
 **`psc refresh` removes deleted files from the database**
 
@@ -86,7 +88,8 @@ Removes deleted files from the duplicate database. `psc rm` does this
 automatically, so this command only needs to be used if you use some other
 program (e.g. coreutils `rm`) and want to remove missing files from the
 database. This command does not re-analyze files, so if you've made substantial
-changes to the filesystem, it's best to do a fresh `psc scan`.
+changes to the filesystem, like moving files around or adding new files, it's
+best to do a `psc scan` of the relevant directories.
 
 **`psc finish` deletes the duplicate database**
 

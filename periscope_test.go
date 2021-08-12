@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
-	"reflect"
 	"testing"
 
 	"github.com/anishathalye/periscope/db"
@@ -67,11 +66,42 @@ func checkEquivalentDuplicateSet(t *testing.T, expected, got []db.DuplicateSet) 
 		t.Fatalf("duplicate sets differ in length: expected %d, got %d", len(expected), len(got))
 	}
 	for i := range expected {
-		if !reflect.DeepEqual(expected[i].Paths, got[i].Paths) {
-			t.Fatalf("duplicate sets have different paths at index %d: expected %v, got %v", i, expected[i].Paths, got[i].Paths)
+		if len(expected[i]) != len(got[i]) {
+			t.Fatalf("duplicate sets have different sizes at index %d, expected %v, got %v", i, len(expected[i]), len(got[i]))
 		}
-		if expected[i].Size != got[i].Size {
-			t.Fatalf("duplicate sets have different size at index %d: expected %v, got %v", i, expected[i].Size, got[i].Size)
+		for j := range expected[i] {
+			expectedInfo := expected[i][j]
+			gotInfo := got[i][j]
+			if expectedInfo.Path != gotInfo.Path {
+				t.Fatalf("duplicate set path differs at (%d, %d), expected %v, got %v", i, j, expectedInfo.Path, gotInfo.Path)
+			}
+			if expectedInfo.Size != gotInfo.Size {
+				t.Fatalf("duplicate set size differs at (%d, %d), expected %v, got %v", i, j, expectedInfo.Size, gotInfo.Size)
+			}
 		}
 	}
 }
+
+func checkEquivalentInfos(t *testing.T, expected, got []db.FileInfo) {
+	if len(expected) != len(got) {
+		t.Fatalf("infos differ in length: expected %d, got %d", len(expected), len(got))
+	}
+	for i := range expected {
+		expectedInfo := expected[i]
+		gotInfo := got[i]
+		if expectedInfo.Path != gotInfo.Path {
+			t.Fatalf("info path differs at %d, expected %v, got %v", i, expectedInfo.Path, gotInfo.Path)
+		}
+		if expectedInfo.Size != gotInfo.Size {
+			t.Fatalf("info size differs at %d, expected %v, got %v", i, expectedInfo.Size, gotInfo.Size)
+		}
+		if (len(expectedInfo.ShortHash) != 0) != (len(gotInfo.ShortHash) != 0) {
+			t.Fatalf("info short hash presence differs at %d, expected %v, got %v", i, len(expectedInfo.ShortHash) != 0, len(gotInfo.ShortHash) != 0)
+		}
+		if (len(expectedInfo.FullHash) != 0) != (len(gotInfo.FullHash) != 0) {
+			t.Fatalf("info full hash presence differs at %d, expected %v, got %v", i, len(expectedInfo.FullHash) != 0, len(gotInfo.FullHash) != 0)
+		}
+	}
+}
+
+var dummyHash []byte = []byte{0x01, 0x03, 0x03, 0x07}

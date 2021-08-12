@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/anishathalye/periscope/herror"
 
@@ -13,47 +14,39 @@ import (
 
 const initialChunkSize = 4 * 1024
 const readChunkSize = 1024 * 1024
-
+const ShortHashSize = 8
 const HashSize = blake2b.Size256
 
-func (ps *Periscope) hashPartial(path string, key []byte, short bool) ([HashSize]byte, error) {
-	var buf []byte
-	if short {
-		buf = make([]byte, initialChunkSize)
-	} else {
-		buf = make([]byte, readChunkSize)
-	}
-	var ret [HashSize]byte
+func hashToArray(hash []byte) [HashSize]byte {
+	var res [HashSize]byte
+	copy(res[:], hash)
+	return res
+}
+
+func shortHashToArray(hash []byte) [ShortHashSize]byte {
+	var res [ShortHashSize]byte
+	copy(res[:], hash)
+	return res
+}
+
+func (ps *Periscope) hashPartial(path string, key []byte) ([]byte, error) {
+	buf := make([]byte, initialChunkSize)
 	h, err := blake2b.New256(key)
 	if err != nil {
-		return ret, err
+		return nil, err
 	}
 	f, err := ps.fs.Open(path)
 	if err != nil {
-		return ret, err
+		return nil, err
 	}
 	defer f.Close()
 
-	if !short {
-		if _, err := f.Seek(initialChunkSize, os.SEEK_SET); err != nil {
-			return ret, err
-		}
+	n, err := f.Read(buf)
+	if err != nil && err != io.EOF {
+		return nil, err
 	}
-
-	if short {
-		n, err := f.Read(buf)
-		if err != nil && err != io.EOF {
-			return ret, err
-		}
-		h.Write(buf[:n])
-	} else {
-		if _, err := io.CopyBuffer(h, f, buf); err != nil {
-			return ret, err
-		}
-	}
-
-	h.Sum(ret[:0])
-	return ret, nil
+	h.Write(buf[:n])
+	return h.Sum(nil)[:ShortHashSize], nil
 }
 
 // a simpler hashFile that hashes the full file
@@ -165,4 +158,16 @@ func (ps *Periscope) checkFile(path string, mustBeRegularFile, mustBeDirectory b
 	}
 	// all okay
 	return resolved, info, nil
+}
+
+func containedInAny(path string, dirs []string) bool {
+	for _, dir := range dirs {
+		if dir[len(dir)-1] != os.PathSeparator {
+			dir = dir + string(os.PathSeparator)
+		}
+		if strings.HasPrefix(path, dir) {
+			return true
+		}
+	}
+	return false
 }

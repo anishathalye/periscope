@@ -52,9 +52,11 @@ func genFile(w io.Writer, size int64, seed int64) {
 	if size < 8 {
 		panic("testfs: doesn't support 0 < size < 8")
 	}
-	binary.Write(w, binary.LittleEndian, seed)
 	r := rand.New(rand.NewSource(seed))
 	io.CopyN(w, r, size-8)
+	// we write the file size into the end of the file, so that files with common seeds have a
+	// common prefix, even when they don't have the same size
+	binary.Write(w, binary.LittleEndian, seed)
 }
 
 func (fs *Fs) Mkfs() afero.Fs {
@@ -75,6 +77,7 @@ func From(fs afero.Fs) *Fs {
 			size := info.Size()
 			var seed int64
 			if size >= 8 {
+				f.Seek(size-8, 0)
 				binary.Read(f, binary.LittleEndian, &seed)
 			}
 			files = append(files, FileDesc{path, size, seed})
