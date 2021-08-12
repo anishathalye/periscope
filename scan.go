@@ -93,6 +93,7 @@ func (ps *Periscope) findFilesBySize(paths []string, options *ScanOptions) (map[
 						for _, k := range known {
 							if !containedInAny(k.Path, paths) {
 								sizeToInfos[size] = append(sizeToInfos[size], searchResult{info: k, old: true})
+								files++
 							}
 						}
 					}
