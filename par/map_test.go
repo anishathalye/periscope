@@ -45,7 +45,7 @@ func TestMapMapMultipleEmit(t *testing.T) {
 	for v := range MapN(m, 4, mapper) {
 		got = append(got, v.(int))
 	}
-	sort.Sort(sort.IntSlice(got))
+	sort.Ints(got)
 	expected := []int{3, 4, 4, 5, 5, 5, 10, 11}
 	if !reflect.DeepEqual(got, expected) {
 		t.Fatalf("expected %v, got %v", expected, got)

@@ -176,7 +176,7 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 		if hash == nil {
 			hash = currHash
 		} else {
-			if bytes.Compare(hash, currHash) != 0 {
+			if !bytes.Equal(hash, currHash) {
 				// files within set don't agree; give up
 				return nil
 			}

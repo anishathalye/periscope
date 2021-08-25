@@ -15,7 +15,7 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/spf13/afero"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 const dbDirectory = "periscope"
@@ -80,7 +80,7 @@ func (ps *Periscope) progressBar(total int, template string) *pb.ProgressBar {
 	bar.SetTemplateString(template)
 	bar.SetMaxWidth(99)
 	bar.Start()
-	if w, ok := ps.errStream.(*os.File); ok && terminal.IsTerminal(int(w.Fd())) {
+	if w, ok := ps.errStream.(*os.File); ok && term.IsTerminal(int(w.Fd())) {
 		bar.SetWriter(ps.errStream)
 	} else {
 		bar.SetWriter(ioutil.Discard)

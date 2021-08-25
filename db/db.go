@@ -186,16 +186,6 @@ func (s *Session) exec(query string, args ...interface{}) (sql.Result, error) {
 	return s.db.Exec(query, args...)
 }
 
-func (s *Session) prepare(query string) (*sql.Stmt, error) {
-	if s.tx != nil {
-		return s.tx.Prepare(query)
-	}
-	if s.db == nil {
-		return nil, herror.Internal(nil, "transaction is finished")
-	}
-	return s.db.Prepare(query)
-}
-
 func (s *Session) Add(info FileInfo) herror.Interface {
 	if _, err := s.exec(`
 	REPLACE INTO file_info (path, size, short_hash, full_hash)

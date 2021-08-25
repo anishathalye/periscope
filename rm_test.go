@@ -581,11 +581,11 @@ func TestRmPartialPermission(t *testing.T) {
 	os.Chmod(filepath.Join(dir, "d", "y"), 0o000)
 	err := ps.Rm([]string{filepath.Join(dir, "d")}, &RmOptions{Recursive: true})
 	check(t, err)
-	info, xerr := os.Stat(filepath.Join(dir, "d", "x"))
+	_, xerr := os.Stat(filepath.Join(dir, "d", "x"))
 	if !os.IsNotExist(xerr) {
 		t.Fatalf("expected d/x to be deleted")
 	}
-	info, xerr = os.Stat(filepath.Join(dir, "d", "y"))
+	info, xerr := os.Stat(filepath.Join(dir, "d", "y"))
 	if xerr != nil || !info.Mode().IsRegular() {
 		t.Fatal("expected d/y to be preserved")
 	}

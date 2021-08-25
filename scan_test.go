@@ -510,7 +510,7 @@ func TestScanIncrementalPartialToFull(t *testing.T) {
 		{Path: "/c/z", Size: 9000, ShortHash: dummyHash, FullHash: nil},
 	}
 	got2, _ := ps.db.AllInfos()
-	// checkEquivalentInfos(t, expected, got2)
+	checkEquivalentInfos(t, expected, got2)
 	err = ps.Scan([]string{"/d"}, &ScanOptions{})
 	check(t, err)
 	got, err := ps.db.AllDuplicates()

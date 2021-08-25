@@ -116,7 +116,7 @@ func Show(afs afero.Fs) string {
 func (fs *Fs) ShowIndent(n int) string {
 	out := new(bytes.Buffer)
 	for _, file := range fs.files {
-		fmt.Fprintf(out, strings.Repeat(" ", n))
+		fmt.Fprint(out, strings.Repeat(" ", n))
 		fmt.Fprintf(out, "%s [%d %d]\n", file.Path, file.Size, file.Seed)
 	}
 	return out.String()

@@ -27,7 +27,6 @@ func versionValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]s
 var (
 	version string
 	commit  string
-	date    string
 )
 
 func versionRun(cmd *cobra.Command, _ []string) error {
