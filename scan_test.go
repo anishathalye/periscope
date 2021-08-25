@@ -30,12 +30,12 @@ func TestScanBasic(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/c/x", 10248, nil, nil},
-		{"/x", 10248, nil, nil},
+		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
+		{Path: "/x", Size: 10248, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/.bar", 100, nil, nil},
-		{"/.foo", 100, nil, nil},
-		{"/c/.d/foo", 100, nil, nil},
+		{Path: "/.bar", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/.foo", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/c/.d/foo", Size: 100, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -72,8 +72,8 @@ func TestScanMinimumSize(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/c/x", 10248, nil, nil},
-		{"/x", 10248, nil, nil},
+		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
+		{Path: "/x", Size: 10248, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -95,9 +95,9 @@ func TestScanMaximumSize(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/.bar", 100, nil, nil},
-		{"/.foo", 100, nil, nil},
-		{"/c/.d/foo", 100, nil, nil},
+		{Path: "/.bar", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/.foo", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/c/.d/foo", Size: 100, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -123,12 +123,12 @@ func TestScanMinimumMaximumSize(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/c/x", 10248, nil, nil},
-		{"/x", 10248, nil, nil},
+		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
+		{Path: "/x", Size: 10248, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/.bar", 100, nil, nil},
-		{"/.foo", 100, nil, nil},
-		{"/c/.d/foo", 100, nil, nil},
+		{Path: "/.bar", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/.foo", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/c/.d/foo", Size: 100, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -175,8 +175,8 @@ func TestScanNoAccess(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{filepath.Join(dir, "y"), 1, nil, nil},
-		{filepath.Join(dir, "z"), 1, nil, nil},
+		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
+		{Path: filepath.Join(dir, "z"), Size: 1, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -193,8 +193,8 @@ func TestScanLargeFiles(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/m/r/p/first.mp4", 104857600, nil, nil},
-		{"/m/r/u/x/0000.mp4", 104857600, nil, nil},
+		{Path: "/m/r/p/first.mp4", Size: 104857600, ShortHash: nil, FullHash: nil},
+		{Path: "/m/r/u/x/0000.mp4", Size: 104857600, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -274,11 +274,11 @@ func TestScanMultiple(t *testing.T) {
 	got, err = ps.db.AllDuplicates()
 	check(t, err)
 	expected = []db.DuplicateSet{{
-		{"/a/b/c/x", 394820, nil, nil},
-		{"/d/e/y", 394820, nil, nil},
+		{Path: "/a/b/c/x", Size: 394820, ShortHash: nil, FullHash: nil},
+		{Path: "/d/e/y", Size: 394820, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/a/z/e", 1337, nil, nil},
-		{"/d/e/f/g/h/z", 1337, nil, nil},
+		{Path: "/a/z/e", Size: 1337, ShortHash: nil, FullHash: nil},
+		{Path: "/d/e/f/g/h/z", Size: 1337, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -301,17 +301,17 @@ func TestScanOverlap(t *testing.T) {
 	got, err := ps.db.AllDuplicates()
 	check(t, err)
 	expected := []db.DuplicateSet{{
-		{"/a/b/c/x", 394820, nil, nil},
-		{"/d/e/y", 394820, nil, nil},
+		{Path: "/a/b/c/x", Size: 394820, ShortHash: nil, FullHash: nil},
+		{Path: "/d/e/y", Size: 394820, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/a/b/c/q", 10203, nil, nil},
-		{"/y/q", 10203, nil, nil},
+		{Path: "/a/b/c/q", Size: 10203, ShortHash: nil, FullHash: nil},
+		{Path: "/y/q", Size: 10203, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/a/z/e", 1337, nil, nil},
-		{"/d/e/f/g/h/z", 1337, nil, nil},
+		{Path: "/a/z/e", Size: 1337, ShortHash: nil, FullHash: nil},
+		{Path: "/d/e/f/g/h/z", Size: 1337, ShortHash: nil, FullHash: nil},
 	}, {
-		{"/a/b/c/z", 1000, nil, nil},
-		{"/z", 1000, nil, nil},
+		{Path: "/a/b/c/z", Size: 1000, ShortHash: nil, FullHash: nil},
+		{Path: "/z", Size: 1000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -353,8 +353,8 @@ func TestScanNoReadSymlinks(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{filepath.Join(dir, "x"), 1, nil, nil},
-		{filepath.Join(dir, "y"), 1, nil, nil},
+		{Path: filepath.Join(dir, "x"), Size: 1, ShortHash: nil, FullHash: nil},
+		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -371,8 +371,8 @@ func TestScanNoDescendSymlinks(t *testing.T) {
 	ps.Scan([]string{dir}, &ScanOptions{})
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{filepath.Join(dir, "d1", "w"), 1, nil, nil},
-		{filepath.Join(dir, "d1", "x"), 1, nil, nil},
+		{Path: filepath.Join(dir, "d1", "w"), Size: 1, ShortHash: nil, FullHash: nil},
+		{Path: filepath.Join(dir, "d1", "x"), Size: 1, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -446,9 +446,9 @@ func TestScanIncrementalOverlapAddition(t *testing.T) {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
 	expected := []db.FileInfo{
-		{"/a/z", 1337, nil, nil},
-		{"/a/x1", 1000, dummyHash, dummyHash},
-		{"/a/x2", 1000, dummyHash, dummyHash},
+		{Path: "/a/z", Size: 1337, ShortHash: nil, FullHash: nil},
+		{Path: "/a/x1", Size: 1000, ShortHash: dummyHash, FullHash: dummyHash},
+		{Path: "/a/x2", Size: 1000, ShortHash: dummyHash, FullHash: dummyHash},
 	}
 	got2, _ := ps.db.AllInfos()
 	checkEquivalentInfos(t, expected, got2)
@@ -505,9 +505,9 @@ func TestScanIncrementalPartialToFull(t *testing.T) {
 	// should have computed short hashes for /a/x and /c/z, but no full
 	// hashes
 	expected := []db.FileInfo{
-		{"/b/y", 9999, nil, nil},
-		{"/a/x", 9000, dummyHash, nil},
-		{"/c/z", 9000, dummyHash, nil},
+		{Path: "/b/y", Size: 9999, ShortHash: nil, FullHash: nil},
+		{Path: "/a/x", Size: 9000, ShortHash: dummyHash, FullHash: nil},
+		{Path: "/c/z", Size: 9000, ShortHash: dummyHash, FullHash: nil},
 	}
 	got2, _ := ps.db.AllInfos()
 	// checkEquivalentInfos(t, expected, got2)
@@ -522,10 +522,10 @@ func TestScanIncrementalPartialToFull(t *testing.T) {
 		t.Fatalf("expected duplicate set to have 2 duplicates, got %d", len(got[0]))
 	}
 	expected = []db.FileInfo{
-		{"/b/y", 9999, nil, nil},
-		{"/a/x", 9000, dummyHash, dummyHash},
-		{"/c/z", 9000, dummyHash, nil},
-		{"/d/x", 9000, dummyHash, dummyHash},
+		{Path: "/b/y", Size: 9999, ShortHash: nil, FullHash: nil},
+		{Path: "/a/x", Size: 9000, ShortHash: dummyHash, FullHash: dummyHash},
+		{Path: "/c/z", Size: 9000, ShortHash: dummyHash, FullHash: nil},
+		{Path: "/d/x", Size: 9000, ShortHash: dummyHash, FullHash: dummyHash},
 	}
 	got2, _ = ps.db.AllInfos()
 	checkEquivalentInfos(t, expected, got2)

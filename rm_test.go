@@ -98,8 +98,8 @@ func TestRmRemovesFromDB(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/b", 100, nil, nil},
-		{"/c", 100, nil, nil},
+		{Path: "/b", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/c", Size: 100, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -118,9 +118,9 @@ func TestRmPrunesSingletons(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/a", 100, nil, nil},
-		{"/b", 100, nil, nil},
-		{"/c", 100, nil, nil},
+		{Path: "/a", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/b", Size: 100, ShortHash: nil, FullHash: nil},
+		{Path: "/c", Size: 100, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }

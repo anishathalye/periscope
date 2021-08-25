@@ -26,8 +26,8 @@ func TestRefreshBasic(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/a", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/a", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -44,9 +44,9 @@ func TestRefreshNoChange(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/a", 10000, nil, nil},
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/a", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -72,9 +72,9 @@ func TestRefreshModifyFile(t *testing.T) {
 	// refresh only checks that the files are still there, so we should
 	// still see it as a duplicate
 	expected := []db.DuplicateSet{{
-		{"/a", 10000, nil, nil},
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/a", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -92,17 +92,17 @@ func TestRefreshMove(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	got, _ = ps.db.AllDuplicates()
 	expected = []db.DuplicateSet{{
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
-		{"/f", 10000, nil, nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/f", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -122,8 +122,8 @@ func TestRefreshReplaceFileWithDirectory(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -160,8 +160,8 @@ func TestRefreshPreserveNonSingletons(t *testing.T) {
 	check(t, err)
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{"/b", 10000, nil, nil},
-		{"/c/d/e", 10000, nil, nil},
+		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
+		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -182,8 +182,8 @@ func TestRefreshPermissionError(t *testing.T) {
 	ps.Refresh(&RefreshOptions{})
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{filepath.Join(dir, "d2", "y"), 1, nil, nil},
-		{filepath.Join(dir, "d2", "z"), 1, nil, nil},
+		{Path: filepath.Join(dir, "d2", "y"), Size: 1, ShortHash: nil, FullHash: nil},
+		{Path: filepath.Join(dir, "d2", "z"), Size: 1, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
@@ -203,8 +203,8 @@ func TestRefreshNonRegularFile(t *testing.T) {
 	ps.Refresh(&RefreshOptions{})
 	got, _ := ps.db.AllDuplicates()
 	expected := []db.DuplicateSet{{
-		{filepath.Join(dir, "y"), 1, nil, nil},
-		{filepath.Join(dir, "z"), 1, nil, nil},
+		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
+		{Path: filepath.Join(dir, "z"), Size: 1, ShortHash: nil, FullHash: nil},
 	}}
 	checkEquivalentDuplicateSet(t, expected, got)
 }
