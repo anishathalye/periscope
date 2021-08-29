@@ -31,6 +31,24 @@ func addAll(db *Session, infos []FileInfo) error {
 	return nil
 }
 
+func TestVersionOk(t *testing.T) {
+	dir, err := ioutil.TempDir("", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+	dbPath := filepath.Join(dir, "db.sqlite")
+	_, err = New(dbPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// check that opening db is ok
+	_, err = New(dbPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestVersionMismatch(t *testing.T) {
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
@@ -246,6 +264,23 @@ func TestLookup(t *testing.T) {
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected empty set, got %v", got)
+	}
+}
+
+func TestInfosBySize(t *testing.T) {
+	db := newInMemoryDb(t)
+	infos := []FileInfo{
+		{"/a", 133, []byte("a"), []byte("aa")},
+		{"/x", 1234, []byte("a"), []byte("fff")},
+		{"/y", 1337, nil, nil},
+		{"/z", 1338, nil, nil},
+	}
+	check(t, addAll(db, infos))
+	got, err := db.InfosBySize(1234)
+	check(t, err)
+	expected := []FileInfo{{"/x", 1234, []byte("a"), []byte("fff")}}
+	if !reflect.DeepEqual(expected, got) {
+		t.Fatalf("expected %v, got %v", expected, got)
 	}
 }
 

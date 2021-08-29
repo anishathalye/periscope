@@ -89,10 +89,12 @@ func TestDirectories(t *testing.T) {
 	fs := From(Read(`
 /c/d [4096 2]
 /c/e/foo [100 4]
+/zero [0 0]
 	`).Mkfs())
 	expected := New([]FileDesc{
 		{"/c/d", 4096, 2},
 		{"/c/e/foo", 100, 4},
+		{"/zero", 0, 0},
 	})
 	if !fs.Equal(expected) {
 		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), fs.ShowIndent(2))
