@@ -20,17 +20,18 @@ type LsOptions struct {
 	Duplicate bool
 	Unique    bool
 	Relative  bool
+	Recursive bool
 }
 
 func (ps *Periscope) Ls(paths []string, options *LsOptions) herror.Interface {
 	var herr herror.Interface
-	echoDir := len(paths) > 1
-	var err herror.Interface
-	for i, p := range paths {
-		if i > 0 && err == nil {
-			fmt.Fprintf(ps.outStream, "\n")
+	multi := len(paths) > 1
+	firstToShow := true
+	for _, p := range paths {
+		didShow, err := ps.ls1(p, options, multi, true, firstToShow)
+		if didShow {
+			firstToShow = false
 		}
-		err = ps.ls1(p, options, echoDir)
 		if err != nil {
 			herr = err
 		}
@@ -41,42 +42,76 @@ func (ps *Periscope) Ls(paths []string, options *LsOptions) herror.Interface {
 	return herr
 }
 
-func (ps *Periscope) ls1(path string, options *LsOptions, echoDir bool) herror.Interface {
+func (ps *Periscope) ls1(path string, options *LsOptions, multi, top, firstToShow bool) (bool, herror.Interface) {
 	absPath, _, herr := ps.checkFile(path, false, true, "list", false, false)
 	if herr != nil {
-		return herr
+		return false, herr
 	}
 	files, err := afero.ReadDir(ps.fs, absPath)
 	if os.IsPermission(err) {
 		fmt.Fprintf(ps.errStream, "cannot access '%s': permission denied\n", path)
-		return herror.Silent()
+		return false, herror.Silent()
 	}
 	if err != nil {
-		return herror.Internal(err, "")
+		return false, herror.Internal(err, "")
 	}
 	w := tabwriter.NewWriter(ps.outStream, 0, 0, 1, ' ', tabwriter.DiscardEmptyColumns)
-	if echoDir {
-		fmt.Fprintf(ps.outStream, "%s:\n", path)
-	}
+	var recurseDirs []string
+	showAny := false
 	for _, file := range files {
 		if file.Name()[0] != '.' || options.All {
-			err := ps.list1(w, file, absPath, options)
+			didShow, isDirectory, err := ps.list1(w, file, absPath, options)
 			if err != nil {
-				return err
+				return false, err
+			}
+			showAny = showAny || didShow
+			if isDirectory && options.Recursive {
+				recurseDirs = append(recurseDirs, file.Name())
 			}
 		}
 	}
+	withFilter := options.Duplicate || options.Unique
+	// only show directory name if any of the following are true:
+	// - multiple directories are listed in the command invocation, and
+	//   this is one of those directories (this is the top-level invocation)
+	// - we're in recursive mode, and any of:
+	//     - there are no filters
+	//     - we are going to list a non-zero number of files
+	echoDir := multi && top || options.Recursive && (!withFilter || showAny)
+	if echoDir {
+		if !firstToShow {
+			fmt.Fprint(ps.outStream, "\n")
+		}
+		fmt.Fprintf(ps.outStream, "%s:\n", path)
+	}
 	w.Flush()
-	return nil
+
+	didShow := echoDir || showAny
+	for _, dir := range recurseDirs {
+		recDidShow, err := ps.ls1(filepath.Join(path, dir), options, multi, false, firstToShow && !didShow)
+		if err != nil {
+			if herr == nil {
+				herr = err
+			}
+			if !herror.IsSilent(herr) {
+				return didShow, herr
+			}
+			continue
+		}
+		didShow = didShow || recDidShow
+	}
+	return didShow, herr
 }
 
-func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, options *LsOptions) herror.Interface {
+func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, options *LsOptions) (bool, bool, herror.Interface) {
 	mode := file.Mode()
+	isDirectory := false
 	var desc string
 	var fullPath string
 	var dupeSet db.DuplicateSet
 	if mode&os.ModeDir == os.ModeDir {
 		desc = "d"
+		isDirectory = true
 	} else if mode&os.ModeSymlink == os.ModeSymlink {
 		desc = "L"
 	} else if mode&os.ModeNamedPipe == os.ModeNamedPipe {
@@ -92,7 +127,7 @@ func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, opti
 		var err herror.Interface
 		dupeSet, err = ps.db.Lookup(fullPath)
 		if err != nil {
-			return err
+			return false, false, err
 		}
 		nDupes := len(dupeSet) - 1
 		if nDupes > 0 {
@@ -122,5 +157,5 @@ func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, opti
 			}
 		}
 	}
-	return nil
+	return show, isDirectory, nil
 }

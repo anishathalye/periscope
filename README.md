@@ -53,9 +53,8 @@ After identifying areas to explore with `psc report`, you can navigate to those
 directories in your shell with `cd`, and then you can use Periscope commands to
 understand duplicates:
 
-- `psc tree` lists all duplicates contained recursively under the given
-  directory
-- `psc ls` gives a duplicate-aware directory listing
+- `psc ls` gives a duplicate-aware directory listing (optionally recursively,
+  with the `-R` flag)
 - `psc info` shows information on a specific file (and its duplicates)
 
 **Delete duplicates**
@@ -115,12 +114,6 @@ JSON). **This is the only output from Periscope that other programs should
 consume.** Future versions of Periscope may add to the information that's
 included in the dump, but the layout of existing data will not change.
 
-**`psc tree` lists all duplicates in a given directory**
-
-Lists all files recursively contained in the given directory (or the current
-directory, if none is given) that have a duplicate file elsewhere. This command
-hides hidden files and folders by default; the `-a` flag includes hidden files.
-
 **`psc ls` lists a directory**
 
 Lists files and folders in the given directory (or the current directory, if
@@ -131,6 +124,17 @@ and special files are tagged with a character describing their type, e.g. 'p'
 for named pipes. `-a` shows hidden files. `-d` lists only duplicates, while
 `-u` lists only unique files. `-v` lists all duplicates of every file, and `-r`
 shows the path to the duplicate as a relative path instead of an absolute path.
+`-R` lists files recursively; this flag combines well with the `-d` flag, to
+list only duplicate files recursively contained in a given directory.
+
+**`psc tree` lists all duplicates in a given directory**
+
+Lists all files recursively contained in the given directory (or the current
+directory, if none is given) that have a duplicate file elsewhere. This command
+hides hidden files and folders by default; the `-a` flag includes hidden files.
+
+This command shows a "flattened" representation; in most cases, a `psc ls -Rd`
+is more useful.
 
 **`psc info` inspects a file**
 

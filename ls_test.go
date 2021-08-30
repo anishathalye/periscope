@@ -25,7 +25,7 @@ func TestLsBasic(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 1 a
 1 b
@@ -47,7 +47,7 @@ func TestLsOutsideScan(t *testing.T) {
 	ps.Scan([]string{"/d2"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 a
 a2
@@ -73,7 +73,7 @@ func TestLsCountDuplicates(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 3 a
 1 b
@@ -106,7 +106,7 @@ func TestLsCountOver10(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 12 a
 1  b
@@ -129,7 +129,7 @@ func TestLsDuplicateSameDir(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 3 a
 3 a2
@@ -151,7 +151,7 @@ func TestLsNoCountUnique(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 a
 b
@@ -176,7 +176,7 @@ func TestLsShowOnlyUnique(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{Unique: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 c
 d
@@ -200,7 +200,7 @@ func TestLsShowOnlyDuplicate(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{Duplicate: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 1 a
 1 b
@@ -222,7 +222,7 @@ func TestLsDirectories(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 1 a
 1 b
@@ -244,7 +244,7 @@ func TestLsSpecialModes(t *testing.T) {
 	ps.Scan([]string{dir}, &ScanOptions{})
 	err := ps.Ls([]string{dir}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 1 x
 1 y
@@ -268,7 +268,7 @@ func TestLsVerbose(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{Verbose: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 3 a
     /d1/a2
@@ -303,7 +303,7 @@ func TestLsVerboseRelative(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{Verbose: true, Relative: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 3 a
     a2
@@ -336,7 +336,7 @@ func TestLsVerboseRelativeLong(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/long/directory"}, &LsOptions{Verbose: true, Relative: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 3 a
     b
@@ -363,7 +363,7 @@ func TestLsHidden(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1"}, &LsOptions{})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 1 a
 	`)
@@ -394,7 +394,7 @@ func TestLsMultiple(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1", "/d2"}, &LsOptions{All: true})
 	check(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 /d1:
 1 .b
@@ -418,7 +418,7 @@ func TestLsInaccessible(t *testing.T) {
 	ps, out, stderr := newTest(fs)
 	err := ps.Ls([]string{inner}, &LsOptions{})
 	checkErr(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	if got != "" {
 		t.Fatalf("expected no output, got '%s'", got)
 	}
@@ -437,7 +437,7 @@ func TestLsNonexistent(t *testing.T) {
 	ps, out, stderr := newTest(fs)
 	err := ps.Ls([]string{"/d2"}, &LsOptions{})
 	checkErr(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	if got != "" {
 		t.Fatalf("expected no output, got '%s'", got)
 	}
@@ -455,7 +455,7 @@ func TestLsFile(t *testing.T) {
 	ps, out, stderr := newTest(fs)
 	err := ps.Ls([]string{"/d1/a"}, &LsOptions{})
 	checkErr(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	if got != "" {
 		t.Fatalf("expected no output, got '%s'", got)
 	}
@@ -476,7 +476,7 @@ func TestLsSomeInaccessible(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Ls([]string{"/d1", "/d2", "/d3"}, &LsOptions{})
 	checkErr(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	expected := strings.TrimSpace(`
 /d1:
 1 a
@@ -505,7 +505,7 @@ func TestLsRejectSymlink(t *testing.T) {
 	ps, out, stderr := newTest(fs)
 	err := ps.Ls([]string{filepath.Join(dir, "rec")}, &LsOptions{})
 	checkErr(t, err)
-	got := strings.TrimSpace(out.String())
+	got := strings.TrimRight(out.String(), "\n")
 	if got != "" {
 		t.Fatalf("expected no output, got '%s'", got)
 	}
@@ -513,5 +513,213 @@ func TestLsRejectSymlink(t *testing.T) {
 	got = stderr.String()
 	if !strings.Contains(got, expected) {
 		t.Fatalf("expected stderr to contain '%s', was '%s'", expected, got)
+	}
+}
+
+func TestLsRecursive(t *testing.T) {
+	fs := testfs.Read(`
+/foo.txt [100 1]
+/Pictures/2020/January/IMG_1234.JPG [1000 3]
+/Pictures/2021/August/DSC1337.HEIC [1000 2]
+/Pictures/2021/August/DSC1337.copy.HEIC [1000 2]
+/Temporary/recovered.heic [1000 2]
+	`).Mkfs()
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Ls([]string{"/"}, &LsOptions{Recursive: true})
+	check(t, err)
+	got := strings.TrimRight(out.String(), "\n")
+	expected := strings.TrimSpace(`
+/:
+d Pictures
+d Temporary
+  foo.txt
+
+/Pictures:
+d 2020
+d 2021
+
+/Pictures/2020:
+d January
+
+/Pictures/2020/January:
+IMG_1234.JPG
+
+/Pictures/2021:
+d August
+
+/Pictures/2021/August:
+2 DSC1337.HEIC
+2 DSC1337.copy.HEIC
+
+/Temporary:
+2 recovered.heic
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsRecursiveDuplicateOnly(t *testing.T) {
+	fs := testfs.Read(`
+/foo.txt [100 1]
+/Pictures/2020/January/IMG_1234.JPG [1000 3]
+/Pictures/2021/August/DSC1337.HEIC [1000 2]
+/Pictures/2021/August/DSC1337.copy.HEIC [1000 2]
+/Temporary/recovered.heic [1000 2]
+	`).Mkfs()
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Ls([]string{"/"}, &LsOptions{Recursive: true, Duplicate: true})
+	check(t, err)
+	got := strings.TrimRight(out.String(), "\n")
+	expected := strings.TrimSpace(`
+/Pictures/2021/August:
+2 DSC1337.HEIC
+2 DSC1337.copy.HEIC
+
+/Temporary:
+2 recovered.heic
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsRecursiveHidden(t *testing.T) {
+	fs := testfs.Read(`
+/d1/a [10000 1]
+/d1/.b [1392 2]
+/d2/.a [10000 1]
+/d2/b [1392 2]
+	`).Mkfs()
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Ls([]string{"/"}, &LsOptions{Recursive: true, Duplicate: true})
+	check(t, err)
+	got := strings.TrimSpace(out.String())
+	expected := strings.TrimSpace(`
+/d1:
+1 a
+
+/d2:
+1 b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+	out.Reset()
+	err = ps.Ls([]string{"/"}, &LsOptions{Recursive: true, Duplicate: true, All: true})
+	check(t, err)
+	got = strings.TrimSpace(out.String())
+	expected = strings.TrimSpace(`
+/d1:
+1 .b
+1 a
+
+/d2:
+1 .a
+1 b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsRelative(t *testing.T) {
+	fs := afero.NewOsFs()
+	dir := tempDir()
+	defer os.RemoveAll(dir)
+	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.Mkdir(filepath.Join(dir, "d"), 0o755)
+	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	ps, out, _ := newTest(fs)
+	oldWd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	os.Chdir(dir)
+	defer os.Chdir(oldWd)
+	ps.Scan([]string{"."}, &ScanOptions{})
+	err = ps.Ls([]string{".", "d"}, &LsOptions{})
+	check(t, err)
+	got := strings.TrimSpace(out.String())
+	expected := strings.TrimSpace(`
+.:
+d d
+1 x
+1 y
+
+d:
+1 a
+1 b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsRelativeRecursive(t *testing.T) {
+	fs := afero.NewOsFs()
+	dir := tempDir()
+	defer os.RemoveAll(dir)
+	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.Mkdir(filepath.Join(dir, "d"), 0o755)
+	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	ps, out, _ := newTest(fs)
+	oldWd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	os.Chdir(dir)
+	defer os.Chdir(oldWd)
+	ps.Scan([]string{"."}, &ScanOptions{})
+	err = ps.Ls([]string{"."}, &LsOptions{Recursive: true, Duplicate: true})
+	check(t, err)
+	got := strings.TrimSpace(out.String())
+	expected := strings.TrimSpace(`
+.:
+1 x
+1 y
+
+d:
+1 a
+1 b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsRelativeDir(t *testing.T) {
+	fs := afero.NewOsFs()
+	dir := tempDir()
+	defer os.RemoveAll(dir)
+	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.Mkdir(filepath.Join(dir, "d"), 0o755)
+	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	ps, out, _ := newTest(fs)
+	oldWd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	os.Chdir(dir)
+	defer os.Chdir(oldWd)
+	ps.Scan([]string{"."}, &ScanOptions{})
+	err = ps.Ls([]string{"d"}, &LsOptions{})
+	check(t, err)
+	got := strings.TrimSpace(out.String())
+	expected := strings.TrimSpace(`
+1 a
+1 b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
 	}
 }

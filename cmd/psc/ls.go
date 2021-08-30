@@ -13,6 +13,7 @@ var lsFlags struct {
 	duplicate bool
 	unique    bool
 	relative  bool
+	recursive bool
 }
 
 var lsCmd = &cobra.Command{
@@ -30,6 +31,7 @@ func init() {
 	lsCmd.Flags().BoolVarP(&lsFlags.duplicate, "duplicate", "d", false, "show only duplicates")
 	lsCmd.Flags().BoolVarP(&lsFlags.unique, "unique", "u", false, "show only unique files")
 	lsCmd.Flags().BoolVarP(&lsFlags.relative, "relative", "r", false, "show duplicates using relative paths")
+	lsCmd.Flags().BoolVarP(&lsFlags.recursive, "recursive", "R", false, "list subdirectories recursively")
 	rootCmd.AddCommand(lsCmd)
 }
 
@@ -60,6 +62,7 @@ func lsRun(cmd *cobra.Command, paths []string) error {
 		Duplicate: lsFlags.duplicate,
 		Unique:    lsFlags.unique,
 		Relative:  lsFlags.relative,
+		Recursive: lsFlags.recursive,
 	}
 	return ps.Ls(paths, options)
 }
