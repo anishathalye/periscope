@@ -345,10 +345,10 @@ func (s *Session) Summary() (InfoSummary, herror.Interface) {
 	}, nil
 }
 
-// Returns info for everything matching the given file, if it has duplicates.
+// Returns info for everything matching the given file.
 //
-// Returns [] if there isn't at least one known duplicate, even if the given
-// file has a known full hash.
+// Returns [] if there isn't a matching file in the database. If the file
+// exists in the database, that file is returned first.
 func (s *Session) Lookup(path string) (DuplicateSet, herror.Interface) {
 	var set DuplicateSet
 	row, herr := s.queryRow("SELECT path, size, short_hash, full_hash FROM file_info WHERE path = ?", path)
@@ -362,12 +362,17 @@ func (s *Session) Lookup(path string) (DuplicateSet, herror.Interface) {
 	} else if err != nil {
 		return nil, herror.Internal(err, "")
 	}
+	set = append(set, info)
 	if info.FullHash == nil {
 		// no known duplicates
-		return nil, nil
+		return set, nil
 	}
 	// get all others
-	rows, err := s.query("SELECT path, size, short_hash, full_hash FROM file_info WHERE full_hash = ? ORDER BY path", info.FullHash)
+	rows, err := s.query(`
+	SELECT path, size, short_hash, full_hash
+	FROM file_info
+	WHERE full_hash = ? AND path != ?
+	ORDER BY path`, info.FullHash, path)
 	if err != nil {
 		return nil, herror.Internal(err, "")
 	}
@@ -378,10 +383,6 @@ func (s *Session) Lookup(path string) (DuplicateSet, herror.Interface) {
 			return nil, herror.Internal(err, "")
 		}
 		set = append(set, info)
-	}
-	// if there are no duplicates, return an empty duplicate set
-	if len(set) == 1 {
-		return nil, nil
 	}
 	return set, nil
 }

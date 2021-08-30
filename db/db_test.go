@@ -244,6 +244,7 @@ func TestLookup(t *testing.T) {
 	}
 	got, err = db.Lookup("/b")
 	check(t, err)
+	expected = DuplicateSet{infos[1], infos[0]}
 	if !reflect.DeepEqual(expected, got) {
 		t.Fatalf("expected %v, got %v", expected, got)
 	}
@@ -256,14 +257,16 @@ func TestLookup(t *testing.T) {
 	// no matching
 	got, err = db.Lookup("/x")
 	check(t, err)
-	if len(got) != 0 {
-		t.Fatalf("expected empty set, got %v", got)
+	expected = DuplicateSet{infos[2]}
+	if !reflect.DeepEqual(expected, got) {
+		t.Fatalf("expected %v, got %v", expected, got)
 	}
 	// no full hash
 	got, err = db.Lookup("/y")
 	check(t, err)
-	if len(got) != 0 {
-		t.Fatalf("expected empty set, got %v", got)
+	expected = DuplicateSet{infos[3]}
+	if !reflect.DeepEqual(expected, got) {
+		t.Fatalf("expected %v, got %v", expected, got)
 	}
 }
 
