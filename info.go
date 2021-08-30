@@ -1,8 +1,10 @@
 package periscope
 
 import (
+	"encoding/hex"
 	"fmt"
 	"path/filepath"
+	"text/tabwriter"
 
 	"github.com/anishathalye/periscope/herror"
 )
@@ -42,15 +44,31 @@ func (ps *Periscope) info1(path string, options *InfoOptions) herror.Interface {
 	if nCopies > 1 {
 		nDupes = nCopies - 1
 	}
-	fmt.Fprintf(ps.outStream, "%d %s\n", nDupes, path)
-	dirPath := filepath.Dir(absPath)
-	for _, info := range dupeSet {
-		if info.Path != absPath {
-			showPath := info.Path
-			if options.Relative {
-				showPath = relPath(dirPath, info.Path)
+	fmt.Fprintf(ps.outStream, "%s\n", path)
+	w := tabwriter.NewWriter(ps.outStream, 0, 0, 0, ' ', tabwriter.DiscardEmptyColumns|tabwriter.AlignRight)
+	if len(dupeSet) > 0 {
+		info := dupeSet[0]
+		if info.ShortHash != nil {
+			fmt.Fprintf(w, "  short hash:\v %s\n", hex.EncodeToString(info.ShortHash))
+		}
+		if info.FullHash != nil {
+			fmt.Fprintf(w, "  full hash:\v %s\n", hex.EncodeToString(info.FullHash))
+		}
+	}
+	if nDupes > 0 {
+		fmt.Fprintf(w, "  duplicates:\v %d\n", nDupes)
+	}
+	w.Flush()
+	if nDupes > 0 {
+		dirPath := filepath.Dir(absPath)
+		for _, info := range dupeSet {
+			if info.Path != absPath {
+				showPath := info.Path
+				if options.Relative {
+					showPath = relPath(dirPath, info.Path)
+				}
+				fmt.Fprintf(ps.outStream, "    %s\n", showPath)
 			}
-			fmt.Fprintf(ps.outStream, "  %s\n", showPath)
 		}
 	}
 	return nil
