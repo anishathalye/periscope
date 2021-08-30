@@ -1,12 +1,12 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"encoding/hex"
 	"fmt"
 	"path/filepath"
 	"text/tabwriter"
-
-	"github.com/anishathalye/periscope/herror"
 )
 
 type InfoOptions struct {

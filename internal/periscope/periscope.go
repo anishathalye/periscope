@@ -3,15 +3,15 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/spf13/afero"

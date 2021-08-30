@@ -1,14 +1,14 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/testfs"
+
 	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/testfs"
 
 	"github.com/spf13/afero"
 )

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/anishathalye/periscope"
-	"github.com/anishathalye/periscope/herror"
+	"github.com/anishathalye/periscope/internal/herror"
+	"github.com/anishathalye/periscope/internal/periscope"
 
 	"github.com/spf13/cobra"
 )

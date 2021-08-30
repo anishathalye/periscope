@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+	"github.com/anishathalye/periscope/internal/par"
+
 	"encoding/binary"
 	"log"
 	"os"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
-	"github.com/anishathalye/periscope/par"
 
 	"github.com/spf13/afero"
 )

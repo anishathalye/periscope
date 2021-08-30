@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/anishathalye/periscope/herror"
+	"github.com/anishathalye/periscope/internal/herror"
 
 	"fmt"
 	"math"

@@ -1,10 +1,10 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/testfs"
+
 	"strings"
 	"testing"
-
-	"github.com/anishathalye/periscope/testfs"
 )
 
 func TestReportBasic(t *testing.T) {

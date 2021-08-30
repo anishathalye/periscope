@@ -1,12 +1,12 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"container/list"
 	"fmt"
 	"sync"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
 
 	"github.com/dustin/go-humanize"
 )

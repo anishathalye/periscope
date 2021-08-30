@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/testfs"
+
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
-
-	"github.com/anishathalye/periscope/testfs"
 
 	"github.com/spf13/afero"
 )

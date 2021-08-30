@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/anishathalye/periscope/herror"
 
 	"golang.org/x/crypto/blake2b"
 )

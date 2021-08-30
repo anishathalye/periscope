@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"os"
-
-	"github.com/anishathalye/periscope/herror"
 )
 
 func main() {

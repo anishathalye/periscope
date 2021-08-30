@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/anishathalye/periscope"
+	"github.com/anishathalye/periscope/internal/periscope"
 
 	"github.com/spf13/cobra"
 )

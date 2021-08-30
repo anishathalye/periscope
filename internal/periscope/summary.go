@@ -1,10 +1,10 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"text/tabwriter"
-
-	"github.com/anishathalye/periscope/herror"
 
 	"github.com/dustin/go-humanize"
 )

@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+
 	"bytes"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"testing"
-
-	"github.com/anishathalye/periscope/db"
 
 	"github.com/spf13/afero"
 )

@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/testfs"
+
 	"bytes"
 	"encoding/hex"
 	"fmt"
 	"strings"
 	"testing"
-
-	"github.com/anishathalye/periscope/testfs"
 )
 
 func TestHashBasic(t *testing.T) {

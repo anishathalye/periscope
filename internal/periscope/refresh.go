@@ -1,12 +1,12 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+	"github.com/anishathalye/periscope/internal/par"
+
 	"fmt"
 	"log"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
-	"github.com/anishathalye/periscope/par"
 )
 
 type RefreshOptions struct {

@@ -1,10 +1,10 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"os"
-
-	"github.com/anishathalye/periscope/herror"
 )
 
 type FinishOptions struct {

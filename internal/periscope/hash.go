@@ -1,12 +1,12 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
 )
 
 type HashOptions struct {

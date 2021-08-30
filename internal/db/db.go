@@ -1,6 +1,8 @@
 package db
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"bytes"
 	"database/sql"
 	"fmt"
@@ -8,8 +10,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-
-	"github.com/anishathalye/periscope/herror"
 
 	_ "github.com/mattn/go-sqlite3"
 )

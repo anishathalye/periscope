@@ -1,13 +1,13 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"strings"
-
-	"github.com/anishathalye/periscope/herror"
 )
 
 type RmOptions struct {

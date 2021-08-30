@@ -1,15 +1,15 @@
 package periscope
 
 import (
+	"github.com/anishathalye/periscope/internal/db"
+	"github.com/anishathalye/periscope/internal/herror"
+
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strconv"
 	"text/tabwriter"
-
-	"github.com/anishathalye/periscope/db"
-	"github.com/anishathalye/periscope/herror"
 
 	"github.com/spf13/afero"
 )
