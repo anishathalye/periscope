@@ -61,7 +61,7 @@ func (ps *Periscope) removeFile(path string, options *RmOptions, absContained st
 
 func (ps *Periscope) removeDirectory(path string, absPath string, options *RmOptions, absContained string) herror.Interface {
 	if !options.Recursive {
-		fmt.Fprintf(ps.errStream, "cannot remove '%s': must specify -r, --recursive to delete directories\n", path)
+		fmt.Fprintf(ps.errStream, "cannot remove '%s': must specify -r/--recursive to delete directories\n", path)
 		return herror.Silent()
 	}
 	c, herr := ps.db.LookupAllC(absPath, true)

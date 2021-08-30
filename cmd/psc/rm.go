@@ -39,7 +39,7 @@ func rmValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string
 
 func rmPreRun(cmd *cobra.Command, paths []string) error {
 	if rmFlags.arbitrary && rmFlags.contained.valid {
-		return herror.User(nil, "--arbitrary and --contained can't be used together")
+		return herror.User(nil, "-a/--arbitrary and -c/--contained can't be used together")
 	}
 	return nil
 }

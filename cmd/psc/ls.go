@@ -41,7 +41,7 @@ func lsValidArgs(cmd *cobra.Command, args []string, toComplete string) ([]string
 
 func lsPreRun(cmd *cobra.Command, paths []string) error {
 	if lsFlags.duplicate && lsFlags.unique {
-		return herror.User(nil, "--duplicate and --unique can't be used together")
+		return herror.User(nil, "-d/--duplicate and -u/--unique can't be used together")
 	}
 	return nil
 }
