@@ -8,7 +8,7 @@ https://goreportcard.com/report/github.com/anishathalye/periscope
 Periscope gives you "duplicate vision" to help you organize and de-duplicate your files without losing data.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/anishathalye/periscope/assets/demo.gif" width="636" alt="Periscope demo">
+<img src="https://raw.githubusercontent.com/anishathalye/assets/master/periscope/demo.gif" width="636" alt="Periscope demo">
 </p>
 
 Periscope (`psc`) works differently from most other duplicate file finders. It
