@@ -34,11 +34,17 @@ func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface
 	}
 	// remove previously scanned files in paths we are now searching
 	for _, path := range absPaths {
-		tx.RemoveDir(path, options.Minimum, options.Maximum)
+		err := tx.RemoveDir(path, options.Minimum, options.Maximum)
+		if err != nil {
+			return err
+		}
 	}
 	// add all the new things we've found
 	for info := range dupes {
-		tx.Add(info.(db.FileInfo))
+		err := tx.Add(info.(db.FileInfo))
+		if err != nil {
+			return err
+		}
 	}
 	// create indexes if they don't exist already
 	err = tx.CreateIndexes()

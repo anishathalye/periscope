@@ -7,11 +7,12 @@ import (
 )
 
 var hashCmd = &cobra.Command{
-	Use:               "hash path ...",
-	Short:             "Hash a file",
-	Args:              cobra.MinimumNArgs(1),
-	ValidArgsFunction: hashValidArgs,
-	RunE:              hashRun,
+	Use:                   "hash path ...",
+	Short:                 "Hash a file",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.MinimumNArgs(1),
+	ValidArgsFunction:     hashValidArgs,
+	RunE:                  hashRun,
 }
 
 func init() {

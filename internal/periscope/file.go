@@ -144,6 +144,7 @@ func (ps *Periscope) checkFile(path string, mustBeRegularFile, mustBeDirectory b
 	if hasLinks {
 		return "", nil, checkFileError("cannot %s '%s': path has symbolic links (use '%s' instead)", action, path, resolved)
 	}
+	// at this point, absPath == resolved
 	// check whether it's a regular file or directory
 	if !info.Mode().IsRegular() && !info.Mode().IsDir() {
 		return "", nil, checkFileError("cannot %s '%s': not a regular file or directory", action, path)
@@ -157,7 +158,7 @@ func (ps *Periscope) checkFile(path string, mustBeRegularFile, mustBeDirectory b
 		return "", nil, checkFileError("cannot %s '%s': not a directory", action, path)
 	}
 	// all okay
-	return resolved, info, nil
+	return absPath, info, nil
 }
 
 func containedInAny(path string, dirs []string) bool {
