@@ -12,11 +12,12 @@ var scanFlags struct {
 }
 
 var scanCmd = &cobra.Command{
-	Use:               "scan [path ...]",
-	Short:             "Scan paths for duplicates",
-	Args:              cobra.ArbitraryArgs,
-	ValidArgsFunction: scanValidArgs,
-	RunE:              scanRun,
+	Use:                   "scan [flags] [path ...]",
+	Short:                 "Scan paths for duplicates",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.ArbitraryArgs,
+	ValidArgsFunction:     scanValidArgs,
+	RunE:                  scanRun,
 }
 
 func init() {

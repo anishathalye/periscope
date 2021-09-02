@@ -11,11 +11,12 @@ var treeFlags struct {
 }
 
 var treeCmd = &cobra.Command{
-	Use:               "tree [path]",
-	Short:             "List all duplicates recursively",
-	Args:              cobra.MaximumNArgs(1),
-	ValidArgsFunction: treeValidArgs,
-	RunE:              treeRun,
+	Use:                   "tree [flags] [path]",
+	Short:                 "List all duplicates recursively",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.MaximumNArgs(1),
+	ValidArgsFunction:     treeValidArgs,
+	RunE:                  treeRun,
 }
 
 func init() {

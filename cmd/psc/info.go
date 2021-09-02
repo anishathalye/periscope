@@ -11,11 +11,12 @@ var infoFlags struct {
 }
 
 var infoCmd = &cobra.Command{
-	Use:               "info path ...",
-	Short:             "Inspect a file",
-	Args:              cobra.MinimumNArgs(1),
-	ValidArgsFunction: infoValidArgs,
-	RunE:              infoRun,
+	Use:                   "info [flags] path ...",
+	Short:                 "Inspect a file",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.MinimumNArgs(1),
+	ValidArgsFunction:     infoValidArgs,
+	RunE:                  infoRun,
 }
 
 func init() {

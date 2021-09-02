@@ -16,12 +16,13 @@ var rmFlags struct {
 }
 
 var rmCmd = &cobra.Command{
-	Use:               "rm path ...",
-	Short:             "Remove duplicates",
-	Args:              cobra.MinimumNArgs(1),
-	ValidArgsFunction: rmValidArgs,
-	PreRunE:           rmPreRun,
-	RunE:              rmRun,
+	Use:                   "rm [flags] path ...",
+	Short:                 "Remove duplicates",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.MinimumNArgs(1),
+	ValidArgsFunction:     rmValidArgs,
+	PreRunE:               rmPreRun,
+	RunE:                  rmRun,
 }
 
 func init() {

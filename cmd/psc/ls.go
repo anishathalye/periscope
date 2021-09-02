@@ -17,12 +17,13 @@ var lsFlags struct {
 }
 
 var lsCmd = &cobra.Command{
-	Use:               "ls [path ...]",
-	Short:             "List a directory",
-	Args:              cobra.ArbitraryArgs,
-	ValidArgsFunction: lsValidArgs,
-	PreRunE:           lsPreRun,
-	RunE:              lsRun,
+	Use:                   "ls [flags] [path ...]",
+	Short:                 "List a directory",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.ArbitraryArgs,
+	ValidArgsFunction:     lsValidArgs,
+	PreRunE:               lsPreRun,
+	RunE:                  lsRun,
 }
 
 func init() {
