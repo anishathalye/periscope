@@ -683,3 +683,45 @@ func TestRmArbitrary(t *testing.T) {
 		t.Fatal("expected exactly one of {'/a/x', '/a/x2', '/a/x3'} to exist")
 	}
 }
+
+func TestRmHardLink(t *testing.T) {
+	fs := afero.NewOsFs()
+	dir := tempDir()
+	defer os.RemoveAll(dir)
+	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.Link(filepath.Join(dir, "x"), filepath.Join(dir, "y"))
+	ps, out, stderr := newTest(fs)
+	ps.Scan([]string{dir}, &ScanOptions{})
+	err := ps.Rm([]string{filepath.Join(dir, "x")}, &RmOptions{})
+	checkErr(t, err)
+	got := strings.TrimSpace(out.String())
+	if got != "" {
+		t.Fatalf("expected no output, got '%s'", got)
+	}
+	expected := "no duplicates"
+	got = stderr.String()
+	if !strings.Contains(got, expected) {
+		t.Fatalf("expected stderr to contain '%s', was '%s'", expected, got)
+	}
+}
+
+func TestRmDeleted(t *testing.T) {
+	fs := testfs.Read(`
+/a [1024 0]
+/b [1024 0]
+	`).Mkfs()
+	ps, out, stderr := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	fs.Remove("/a")
+	err := ps.Rm([]string{"/a"}, &RmOptions{})
+	checkErr(t, err)
+	got := strings.TrimSpace(out.String())
+	if got != "" {
+		t.Fatalf("expected no output, got '%s'", got)
+	}
+	expected := "no such file or directory"
+	got = stderr.String()
+	if !strings.Contains(got, expected) {
+		t.Fatalf("expected stderr to contain '%s', was '%s'", expected, got)
+	}
+}
