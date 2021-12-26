@@ -58,7 +58,7 @@ func New(options *Options) (*Periscope, herror.Interface) {
 	if err != nil {
 		return nil, err
 	}
-	db, err := db.New(dbPath)
+	db, err := db.New(dbPath, options.Debug)
 	if err != nil {
 		return nil, err
 	}

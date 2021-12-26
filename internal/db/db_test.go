@@ -16,7 +16,7 @@ func check(t *testing.T, err error) {
 }
 
 func newInMemoryDb(t *testing.T) *Session {
-	db, err := New(":memory:")
+	db, err := NewInMemory()
 	check(t, err)
 	return db
 }
@@ -38,12 +38,12 @@ func TestVersionOk(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 	dbPath := filepath.Join(dir, "db.sqlite")
-	_, err = New(dbPath)
+	_, err = New(dbPath, true)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// check that opening db is ok
-	_, err = New(dbPath)
+	_, err = New(dbPath, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +56,7 @@ func TestVersionMismatch(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 	dbPath := filepath.Join(dir, "db.sqlite")
-	db, err := New(dbPath)
+	db, err := New(dbPath, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +66,7 @@ func TestVersionMismatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	// check that we fail when creating another db
-	_, err = New(dbPath)
+	_, err = New(dbPath, true)
 	if err == nil {
 		t.Fatal("expected error")
 	}

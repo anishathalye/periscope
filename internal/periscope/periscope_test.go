@@ -19,7 +19,7 @@ func newTest(fs afero.Fs) (*Periscope, *bytes.Buffer, *bytes.Buffer) {
 		log.SetFlags(0)
 		log.SetOutput(ioutil.Discard)
 	}
-	db, err := db.New(":memory:")
+	db, err := db.NewInMemory()
 	if err != nil {
 		panic(err)
 	}
