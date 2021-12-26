@@ -219,10 +219,20 @@ func TestAllDuplicates(t *testing.T) {
 	}
 	err := addAll(db, infos)
 	check(t, err)
-	got, err := db.AllDuplicates()
+	got, err := db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 1 || len(got[0]) != 2 || !reflect.DeepEqual(infos[0], got[0][0]) || !reflect.DeepEqual(infos[1], got[0][1]) {
 		t.Fatalf("expected %v %v, got %v %v", infos[0], infos[1], got[0][0], got[0][1])
+	}
+	got, err = db.AllDuplicates("/a")
+	check(t, err)
+	if len(got) != 1 || len(got[0]) != 2 || !reflect.DeepEqual(infos[0], got[0][0]) || !reflect.DeepEqual(infos[1], got[0][1]) {
+		t.Fatalf("expected %v %v, got %v %v", infos[0], infos[1], got[0][0], got[0][1])
+	}
+	got, err = db.AllDuplicates("/c")
+	check(t, err)
+	if len(got) != 0 {
+		t.Fatalf("expected no infos, got %d", len(got))
 	}
 }
 
@@ -375,7 +385,7 @@ func TestRemove(t *testing.T) {
 	})
 	check(t, err)
 	check(t, db.Remove("/x/y/a"))
-	got, err := db.AllDuplicates()
+	got, err := db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))

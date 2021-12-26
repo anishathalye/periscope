@@ -18,7 +18,7 @@ type ExportOptions struct {
 }
 
 func (ps *Periscope) Export(options *ExportOptions) herror.Interface {
-	c, err := ps.db.AllDuplicatesC()
+	c, err := ps.db.AllDuplicatesC("")
 	if err != nil {
 		return err
 	}

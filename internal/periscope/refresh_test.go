@@ -24,7 +24,7 @@ func TestRefreshBasic(t *testing.T) {
 	fs.Remove("/b")
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/a", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -42,7 +42,7 @@ func TestRefreshNoChange(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/a", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -68,7 +68,7 @@ func TestRefreshModifyFile(t *testing.T) {
 	}
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	// refresh only checks that the files are still there, so we should
 	// still see it as a duplicate
 	expected := []db.DuplicateSet{{
@@ -90,7 +90,7 @@ func TestRefreshMove(t *testing.T) {
 	fs.Rename("/a", "/f")
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -98,7 +98,7 @@ func TestRefreshMove(t *testing.T) {
 	checkEquivalentDuplicateSet(t, expected, got)
 
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	got, _ = ps.db.AllDuplicates()
+	got, _ = ps.db.AllDuplicates("")
 	expected = []db.DuplicateSet{{
 		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -120,7 +120,7 @@ func TestRefreshReplaceFileWithDirectory(t *testing.T) {
 	afero.WriteFile(fs, "/a/x", []byte{'x'}, 0o644)
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -138,7 +138,7 @@ func TestRefreshRemoveSingletons(t *testing.T) {
 	fs.Remove("/a/x/1")
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicate sets, got %d", len(got))
 	}
@@ -158,7 +158,7 @@ func TestRefreshPreserveNonSingletons(t *testing.T) {
 	fs.Remove("/f")
 	err := ps.Refresh(&RefreshOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/b", Size: 10000, ShortHash: nil, FullHash: nil},
 		{Path: "/c/d/e", Size: 10000, ShortHash: nil, FullHash: nil},
@@ -180,7 +180,7 @@ func TestRefreshPermissionError(t *testing.T) {
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Chmod(filepath.Join(dir, "d1"), 0o000)
 	ps.Refresh(&RefreshOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: filepath.Join(dir, "d2", "y"), Size: 1, ShortHash: nil, FullHash: nil},
 		{Path: filepath.Join(dir, "d2", "z"), Size: 1, ShortHash: nil, FullHash: nil},
@@ -201,7 +201,7 @@ func TestRefreshNonRegularFile(t *testing.T) {
 	os.Remove(filepath.Join(dir, "w"))
 	os.Symlink(filepath.Join(dir, "x"), filepath.Join(dir, "w"))
 	ps.Refresh(&RefreshOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
 		{Path: filepath.Join(dir, "z"), Size: 1, ShortHash: nil, FullHash: nil},
@@ -222,7 +222,7 @@ func TestRefreshSymlinkDir(t *testing.T) {
 	os.RemoveAll(filepath.Join(dir, "d2"))
 	os.Symlink(filepath.Join(dir, "d"), filepath.Join(dir, "d2"))
 	ps.Refresh(&RefreshOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicates, got %d", len(got))
 	}

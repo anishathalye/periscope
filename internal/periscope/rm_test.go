@@ -96,7 +96,7 @@ func TestRmRemovesFromDB(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Rm([]string{"/a"}, &RmOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/b", Size: 100, ShortHash: nil, FullHash: nil},
 		{Path: "/c", Size: 100, ShortHash: nil, FullHash: nil},
@@ -116,7 +116,7 @@ func TestRmPrunesSingletons(t *testing.T) {
 	ps.Scan([]string{"/"}, &ScanOptions{})
 	err := ps.Rm([]string{"/d"}, &RmOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: "/a", Size: 100, ShortHash: nil, FullHash: nil},
 		{Path: "/b", Size: 100, ShortHash: nil, FullHash: nil},

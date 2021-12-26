@@ -27,7 +27,7 @@ func TestScanBasic(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
@@ -48,7 +48,7 @@ func TestScanZeroLength(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicate sets, got %d", len(got))
@@ -69,7 +69,7 @@ func TestScanMinimumSize(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{Minimum: 123})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
@@ -92,7 +92,7 @@ func TestScanMaximumSize(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{Maximum: 1000})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/.bar", Size: 100, ShortHash: nil, FullHash: nil},
@@ -120,7 +120,7 @@ func TestScanMinimumMaximumSize(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{Minimum: 50, Maximum: 20000})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/c/x", Size: 10248, ShortHash: nil, FullHash: nil},
@@ -153,7 +153,7 @@ func TestScanKeepOtherSizes(t *testing.T) {
 	check(t, err)
 	err = ps.Scan([]string{"/"}, &ScanOptions{Minimum: 100000})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 4 {
 		t.Fatalf("expected 4 duplicate sets, got %d", len(got))
@@ -173,7 +173,7 @@ func TestScanNoAccess(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{dir}, &ScanOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
 		{Path: filepath.Join(dir, "z"), Size: 1, ShortHash: nil, FullHash: nil},
@@ -190,7 +190,7 @@ func TestScanLargeFiles(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/m/r/p/first.mp4", Size: 104857600, ShortHash: nil, FullHash: nil},
@@ -208,7 +208,7 @@ func TestScanSameStart(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected to find no duplicates, got %d", len(got))
@@ -224,7 +224,7 @@ func TestScanPrefix(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected to find no duplicates, got %d", len(got))
@@ -241,7 +241,7 @@ func TestScanPrefixSameSize(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected to find no duplicates, got %d", len(got))
@@ -264,14 +264,14 @@ func TestScanMultiple(t *testing.T) {
 
 	err := ps.Scan([]string{"/a/"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{}
 	checkEquivalentDuplicateSet(t, expected, got)
 
 	err = ps.Scan([]string{"/d", "/a"}, &ScanOptions{})
 	check(t, err)
-	got, err = ps.db.AllDuplicates()
+	got, err = ps.db.AllDuplicates("")
 	check(t, err)
 	expected = []db.DuplicateSet{{
 		{Path: "/a/b/c/x", Size: 394820, ShortHash: nil, FullHash: nil},
@@ -298,7 +298,7 @@ func TestScanOverlap(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/", "/a", "/d"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	expected := []db.DuplicateSet{{
 		{Path: "/a/b/c/x", Size: 394820, ShortHash: nil, FullHash: nil},
@@ -324,7 +324,7 @@ func TestScanNonexistent(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/a", "/b", "/c"}, &ScanOptions{})
 	checkErr(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected to find no duplicates, got %d", len(got))
@@ -351,7 +351,7 @@ func TestScanNoReadSymlinks(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{dir}, &ScanOptions{})
 	check(t, err)
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: filepath.Join(dir, "x"), Size: 1, ShortHash: nil, FullHash: nil},
 		{Path: filepath.Join(dir, "y"), Size: 1, ShortHash: nil, FullHash: nil},
@@ -369,7 +369,7 @@ func TestScanNoDescendSymlinks(t *testing.T) {
 	os.Symlink(filepath.Join(dir, "d1"), filepath.Join(dir, "d2"))
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	expected := []db.DuplicateSet{{
 		{Path: filepath.Join(dir, "d1", "w"), Size: 1, ShortHash: nil, FullHash: nil},
 		{Path: filepath.Join(dir, "d1", "x"), Size: 1, ShortHash: nil, FullHash: nil},
@@ -414,14 +414,14 @@ func TestScanIncrementalNoOverlap(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/a"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
 	err = ps.Scan([]string{"/b"}, &ScanOptions{})
 	check(t, err)
-	got, err = ps.db.AllDuplicates()
+	got, err = ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 2 {
 		t.Fatalf("expected 2 duplicate sets, got %d", len(got))
@@ -440,7 +440,7 @@ func TestScanIncrementalOverlapAddition(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/a"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
@@ -454,7 +454,7 @@ func TestScanIncrementalOverlapAddition(t *testing.T) {
 	checkEquivalentInfos(t, expected, got2)
 	err = ps.Scan([]string{"/b"}, &ScanOptions{})
 	check(t, err)
-	got, err = ps.db.AllDuplicates()
+	got, err = ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 3 {
 		t.Fatalf("expected 3 duplicate sets, got %d", len(got))
@@ -469,14 +469,14 @@ func TestScanIncrementalCommonPrefix(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	err := ps.Scan([]string{"/a"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicate sets, got %d", len(got))
 	}
 	err = ps.Scan([]string{"/b"}, &ScanOptions{})
 	check(t, err)
-	got, err = ps.db.AllDuplicates()
+	got, err = ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicate sets, got %d", len(got))
@@ -513,7 +513,7 @@ func TestScanIncrementalPartialToFull(t *testing.T) {
 	checkEquivalentInfos(t, expected, got2)
 	err = ps.Scan([]string{"/d"}, &ScanOptions{})
 	check(t, err)
-	got, err := ps.db.AllDuplicates()
+	got, err := ps.db.AllDuplicates("")
 	check(t, err)
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
@@ -540,7 +540,7 @@ func TestScanIncrementalFindMore(t *testing.T) {
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/a"}, &ScanOptions{})
 	ps.Scan([]string{"/b"}, &ScanOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
@@ -548,7 +548,7 @@ func TestScanIncrementalFindMore(t *testing.T) {
 		t.Fatalf("expected 2 duplicates in the set, got %d", len(got[0]))
 	}
 	ps.Scan([]string{"/c"}, &ScanOptions{})
-	got, _ = ps.db.AllDuplicates()
+	got, _ = ps.db.AllDuplicates("")
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
@@ -564,13 +564,13 @@ func TestScanIncrementalRepeatUnlink(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/a"}, &ScanOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
 	fs.Remove("/a/y")
 	ps.Scan([]string{"/a"}, &ScanOptions{})
-	got, _ = ps.db.AllDuplicates()
+	got, _ = ps.db.AllDuplicates("")
 	if len(got) != 0 {
 		t.Fatalf("expected no duplicate sets, got %d", len(got))
 	}
@@ -588,7 +588,7 @@ func TestScanIncrementalRepeatNoticeChange(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/a"}, &ScanOptions{})
-	got, _ := ps.db.AllDuplicates()
+	got, _ := ps.db.AllDuplicates("")
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}
@@ -599,7 +599,7 @@ func TestScanIncrementalRepeatNoticeChange(t *testing.T) {
 	b, _ := afero.ReadFile(fs, "/a/x")
 	afero.WriteFile(fs, "/a/z", b, 0755)
 	ps.Scan([]string{"/a"}, &ScanOptions{})
-	got, _ = ps.db.AllDuplicates()
+	got, _ = ps.db.AllDuplicates("")
 	if len(got) != 1 {
 		t.Fatalf("expected 1 duplicate set, got %d", len(got))
 	}

@@ -443,13 +443,51 @@ func (s *Session) CreateIndexes() herror.Interface {
 // These are necessarily FileInfos with the FullHash field filled out. Each
 // DuplicateSet that is returned always has > 1 element (i.e. it only includes
 // duplicates, not infos where we happen to know the full hash).
-func (s *Session) AllDuplicatesC() (<-chan DuplicateSet, herror.Interface) {
+//
+// path is optional; if "", then all duplicates are returned, otherwise only
+// ones with the given directory prefix
+func (s *Session) AllDuplicatesC(path string) (<-chan DuplicateSet, herror.Interface) {
 	results := make(chan DuplicateSet)
-	rows, err := s.query(`
-	SELECT directory, filename, size, short_hash, full_hash
-	FROM file_info
-	WHERE full_hash IS NOT NULL
-	ORDER BY size DESC, full_hash`)
+	dirid := int64(-1)
+	var err error
+	if path != "" {
+		dirid, err = s.pathToDirectoryId(path, false)
+		if err == sql.ErrNoRows {
+			close(results)
+			return results, nil
+		} else if err != nil {
+			return nil, herror.Internal(err, "")
+		}
+	}
+	var rows *sql.Rows
+	if dirid == -1 {
+		rows, err = s.query(`
+		SELECT directory, filename, size, short_hash, full_hash
+		FROM file_info
+		WHERE full_hash IS NOT NULL
+		ORDER BY size DESC, full_hash`)
+	} else {
+		rows, err = s.query(`
+		WITH dirs AS
+		(
+			WITH RECURSIVE sub_directory (id, parent) AS (
+				SELECT id, parent FROM directory WHERE id = ?
+				UNION ALL
+				SELECT d.id, d.parent
+				FROM directory d, sub_directory sd
+				WHERE d.parent = sd.id
+			)
+			SELECT id FROM sub_directory
+		),
+		matching_hashes AS
+		(
+			SELECT full_hash FROM file_info WHERE directory IN dirs AND full_hash IS NOT NULL
+		)
+		SELECT directory, filename, size, short_hash, full_hash
+		FROM file_info
+		WHERE full_hash IN matching_hashes
+		ORDER BY size DESC, full_hash`, dirid)
+	}
 	if err != nil {
 		return nil, herror.Internal(err, "")
 	}
@@ -494,9 +532,9 @@ func (s *Session) AllDuplicatesC() (<-chan DuplicateSet, herror.Interface) {
 	return results, nil
 }
 
-func (s *Session) AllDuplicates() ([]DuplicateSet, herror.Interface) {
+func (s *Session) AllDuplicates(path string) ([]DuplicateSet, herror.Interface) {
 	var r []DuplicateSet
-	c, err := s.AllDuplicatesC()
+	c, err := s.AllDuplicatesC(path)
 	if err != nil {
 		return nil, err
 	}

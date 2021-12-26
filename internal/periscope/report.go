@@ -14,7 +14,15 @@ import (
 type ReportOptions struct {
 }
 
-func (ps *Periscope) Report(options *ReportOptions) herror.Interface {
+func (ps *Periscope) Report(dir string, options *ReportOptions) herror.Interface {
+	var absDir string
+	if dir != "" {
+		var err herror.Interface
+		absDir, _, err = ps.checkFile(dir, false, true, "filter for", false, true)
+		if err != nil {
+			return err
+		}
+	}
 	// We stream duplicates with AllDuplicatesC, but we don't read directly
 	// from it and write results in the straightforward way. Writing to
 	// output may block (e.g. if the user is using a pager), so if a user
@@ -22,7 +30,7 @@ func (ps *Periscope) Report(options *ReportOptions) herror.Interface {
 	// another, they'd get a "database is locked" error. This seems like
 	// it's a common enough use case that it's worth avoiding it. We
 	// achieve this by buffering the results in memory.
-	sets, err := ps.db.AllDuplicatesC()
+	sets, err := ps.db.AllDuplicatesC(absDir)
 	if err != nil {
 		return err
 	}
