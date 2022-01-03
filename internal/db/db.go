@@ -106,11 +106,17 @@ Ensure that the directory is writable, and if the database file already exists, 
 	// set up pragmas
 	if debug {
 		// good sanity check but slows things down, especially the gc in RemoveDir()
-		db.Exec("PRAGMA foreign_keys = ON")
+		_, err = db.Exec("PRAGMA foreign_keys = ON")
 	} else {
-		db.Exec("PRAGMA foreign_keys = OFF")
+		_, err = db.Exec("PRAGMA foreign_keys = OFF")
 	}
-	db.Exec("PRAGMA cache_size = -500000") // 500 MB
+	if err != nil {
+		return nil, herror.Internal(err, "")
+	}
+	_, err = db.Exec("PRAGMA cache_size = -500000") // 500 MB
+	if err != nil {
+		return nil, herror.Internal(err, "")
+	}
 
 	s := &Session{db: db}
 	herr := s.checkVersion()
