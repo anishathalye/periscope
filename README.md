@@ -173,10 +173,10 @@ brew install periscope
 Periscope has binary releases for macOS and Linux. It has not been tested on
 Windows.
 
-**Install from source with `go get`:**
+**Install from source with `go install`:**
 
 ```bash
-GO111MODULE=on go get github.com/anishathalye/periscope/...
+go install -v github.com/anishathalye/periscope/cmd/psc@latest
 ```
 
 Periscope depends on go-sqlite3, which uses cgo, so you need a C compiler
