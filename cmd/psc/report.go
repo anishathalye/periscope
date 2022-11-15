@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var reportFlags struct {
+	relative bool
+}
+
 var reportCmd = &cobra.Command{
 	Use:                   "report [path]",
 	Short:                 "Report scan results",
@@ -16,6 +20,7 @@ var reportCmd = &cobra.Command{
 }
 
 func init() {
+	reportCmd.Flags().BoolVarP(&reportFlags.relative, "relative", "r", false, "show duplicates using relative paths")
 	rootCmd.AddCommand(reportCmd)
 }
 
@@ -34,5 +39,8 @@ func reportRun(cmd *cobra.Command, paths []string) error {
 	if len(paths) == 1 {
 		path = paths[0]
 	}
-	return ps.Report(path, &periscope.ReportOptions{})
+	options := &periscope.ReportOptions{
+		Relative: reportFlags.relative,
+	}
+	return ps.Report(path, options)
 }

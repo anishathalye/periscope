@@ -6,12 +6,14 @@ import (
 
 	"container/list"
 	"fmt"
+	"path/filepath"
 	"sync"
 
 	"github.com/dustin/go-humanize"
 )
 
 type ReportOptions struct {
+	Relative bool
 }
 
 func (ps *Periscope) Report(dir string, options *ReportOptions) herror.Interface {
@@ -52,6 +54,14 @@ func (ps *Periscope) Report(dir string, options *ReportOptions) herror.Interface
 		mu.Unlock()
 	}()
 
+	var refDir string
+	if options.Relative {
+		var err error
+		refDir, err = filepath.Abs(dir) // if dir == "", this will treat it like dir = "."
+		if err != nil {
+			return herror.Internal(err, "")
+		}
+	}
 	first := true
 	for {
 		mu.Lock()
@@ -72,7 +82,11 @@ func (ps *Periscope) Report(dir string, options *ReportOptions) herror.Interface
 		}
 		fmt.Fprintf(ps.outStream, "%s\n", humanize.Bytes(uint64(set[0].Size))) // all files within a set have the same size
 		for _, info := range set {
-			fmt.Fprintf(ps.outStream, "  %s\n", info.Path)
+			path := info.Path
+			if options.Relative {
+				path = relPath(refDir, path)
+			}
+			fmt.Fprintf(ps.outStream, "  %s\n", path)
 		}
 		first = false
 	}
