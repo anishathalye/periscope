@@ -408,6 +408,25 @@ func TestRmChanged(t *testing.T) {
 	}
 }
 
+func TestRmAllRemoved(t *testing.T) {
+	fs := testfs.Read(`
+/d/a [100 1]
+/d/b [100 1]
+/x/y [100 1]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	fs.Remove("/d/a")
+	fs.Remove("/d/b")
+	err := ps.Rm([]string{"/d"}, &RmOptions{Recursive: true})
+	check(t, err)
+	ex, xerr := afero.Exists(fs, "/x/y")
+	check(t, xerr)
+	if !ex {
+		t.Fatalf("'/x/y' was deleted")
+	}
+}
+
 func TestRmDiverged(t *testing.T) {
 	fs := testfs.Read(`
 /c [200 2]

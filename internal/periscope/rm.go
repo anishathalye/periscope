@@ -115,6 +115,10 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 		path0 = path // some arbitrary path
 		absPath0 = absPath
 	}
+	if len(infos) == 0 {
+		// no candidates when deleting a directory (all files disappeared)
+		return nil
+	}
 	// `candidates` is never used after this point
 	set, _ := ps.db.Lookup(absPath0)
 	// ensure all candidates contained in set
