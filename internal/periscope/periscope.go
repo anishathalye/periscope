@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Anish Athalye. Released under GPLv3.
+// Copyright (c) Anish Athalye. Released under GPLv3.
 
 package periscope
 
