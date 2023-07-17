@@ -32,11 +32,32 @@ var (
 func versionRun(cmd *cobra.Command, _ []string) error {
 	if version != "" && commit != "" {
 		// release built with GoReleaser
-		fmt.Printf("Periscope v%s (git sha1 %s)\n", version, commit[:10])
+		fmt.Printf("Periscope v%s (git %s)\n", version, commit[:10])
 		return nil
 	}
 	if bi, ok := debug.ReadBuildInfo(); ok {
-		fmt.Printf("Periscope %s\n", bi.Main.Version)
+		var version string
+		if bi.Main.Version != "(devel)" {
+			version = bi.Main.Version + " "
+		}
+		var vcs, revision, dirty string
+		for _, kv := range bi.Settings {
+			switch kv.Key {
+			case "vcs":
+				vcs = kv.Value
+			case "vcs.revision":
+				revision = kv.Value
+			case "vcs.modified":
+				if kv.Value == "true" {
+					dirty = "-dirty"
+				}
+			}
+		}
+		if vcs != "" && revision != "" {
+			fmt.Printf("Periscope %s(%s %s%s)\n", version, vcs, revision[:10], dirty)
+		} else {
+			fmt.Printf("Periscope %s\n", bi.Main.Version)
+		}
 		return nil
 	}
 	fmt.Println("Periscope v? (version information unavailable)")
