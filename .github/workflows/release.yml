@@ -13,9 +13,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: docker://mailchain/goreleaser-xcgo:latest
+      - uses: actions/checkout@v3
+      - uses: docker://goreleaser/goreleaser-cross:v1.20.6
         with:
-          args: --rm-dist
+          args: --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
