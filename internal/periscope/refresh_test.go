@@ -5,7 +5,6 @@ import (
 	"github.com/anishathalye/periscope/internal/testfs"
 
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -172,10 +171,10 @@ func TestRefreshPermissionError(t *testing.T) {
 	defer os.RemoveAll(dir)
 	os.Mkdir(filepath.Join(dir, "d1"), 0o755)
 	os.Mkdir(filepath.Join(dir, "d2"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d1", "w"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d1", "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d2", "y"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d2", "z"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d1", "w"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d1", "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d2", "y"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d2", "z"), []byte{'b'}, 0o644)
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Chmod(filepath.Join(dir, "d1"), 0o000)
@@ -192,10 +191,10 @@ func TestRefreshNonRegularFile(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "w"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "z"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "w"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "z"), []byte{'b'}, 0o644)
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Remove(filepath.Join(dir, "w"))
@@ -215,8 +214,8 @@ func TestRefreshSymlinkDir(t *testing.T) {
 	defer os.RemoveAll(dir)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
 	os.Mkdir(filepath.Join(dir, "d2"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "x"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d2", "y"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "x"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d2", "y"), []byte{'b'}, 0o644)
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.RemoveAll(filepath.Join(dir, "d2"))

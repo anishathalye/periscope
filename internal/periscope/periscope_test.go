@@ -4,8 +4,9 @@ import (
 	"github.com/anishathalye/periscope/internal/db"
 
 	"bytes"
-	"io/ioutil"
+	"io"
 	"log"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -17,7 +18,7 @@ func newTest(fs afero.Fs) (*Periscope, *bytes.Buffer, *bytes.Buffer) {
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 	} else {
 		log.SetFlags(0)
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	}
 	db, err := db.NewInMemory()
 	if err != nil {
@@ -50,7 +51,7 @@ func checkErr(t *testing.T, err error) {
 }
 
 func tempDir() string {
-	dir, err := ioutil.TempDir("", "")
+	dir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)
 	}

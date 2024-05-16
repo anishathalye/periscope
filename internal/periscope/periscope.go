@@ -8,7 +8,6 @@ import (
 
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -83,7 +82,7 @@ func (ps *Periscope) progressBar(total int, template string) *pb.ProgressBar {
 	if w, ok := ps.errStream.(*os.File); ok && term.IsTerminal(int(w.Fd())) {
 		bar.SetWriter(ps.errStream)
 	} else {
-		bar.SetWriter(ioutil.Discard)
+		bar.SetWriter(io.Discard)
 	}
 	return bar
 }

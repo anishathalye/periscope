@@ -5,7 +5,6 @@ import (
 	"github.com/anishathalye/periscope/internal/testfs"
 
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -470,8 +469,8 @@ func TestRmNoSymlinks(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Symlink(dir, filepath.Join(dir, "rec"))
 	ps, out, stderr := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
@@ -492,8 +491,8 @@ func TestRmReplacedBySymlink(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	ps, out, stderr := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Remove(filepath.Join(dir, "y"))
@@ -556,8 +555,8 @@ func TestRmLostPermission(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	ps, out, stderr := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Chmod(filepath.Join(dir, "y"), 0o000)
@@ -592,9 +591,9 @@ func TestRmPartialPermission(t *testing.T) {
 	dir := tempDir()
 	defer os.RemoveAll(dir)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "y"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "z"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "z"), []byte{'a'}, 0o644)
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	os.Chmod(filepath.Join(dir, "d", "y"), 0o000)
@@ -707,7 +706,7 @@ func TestRmHardLink(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
 	os.Link(filepath.Join(dir, "x"), filepath.Join(dir, "y"))
 	ps, out, stderr := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})

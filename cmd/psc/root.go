@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -26,7 +26,7 @@ func init() {
 func preRoot(cmd *cobra.Command, args []string) {
 	if !rootFlags.debug {
 		log.SetFlags(0)
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	} else {
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 	}

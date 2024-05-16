@@ -3,7 +3,6 @@ package periscope
 import (
 	"github.com/anishathalye/periscope/internal/testfs"
 
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -91,11 +90,11 @@ func TestReportRelative(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a', 'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a', 'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a', 'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a', 'a'}, 0o644)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
 	ps, out, _ := newTest(fs)
 	oldWd, err := os.Getwd()
 	if err != nil {
@@ -125,11 +124,11 @@ func TestReportRelativeArgument(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a', 'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a', 'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a', 'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a', 'a'}, 0o644)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
 	ps, out, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
 	err := ps.Report(filepath.Join(dir, "d"), &ReportOptions{Relative: true})

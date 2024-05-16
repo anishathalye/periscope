@@ -3,7 +3,6 @@ package periscope
 import (
 	"github.com/anishathalye/periscope/internal/testfs"
 
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -237,8 +236,8 @@ func TestLsSpecialModes(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Symlink(filepath.Join(dir, "x"), filepath.Join(dir, "z"))
 	ps, out, _ := newTest(fs)
 	ps.Scan([]string{dir}, &ScanOptions{})
@@ -499,8 +498,8 @@ func TestLsRejectSymlink(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Symlink(dir, filepath.Join(dir, "rec"))
 	ps, out, stderr := newTest(fs)
 	err := ps.Ls([]string{filepath.Join(dir, "rec")}, &LsOptions{})
@@ -630,11 +629,11 @@ func TestLsRelative(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
 	ps, out, _ := newTest(fs)
 	oldWd, err := os.Getwd()
 	if err != nil {
@@ -665,11 +664,11 @@ func TestLsRelativeRecursive(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
 	ps, out, _ := newTest(fs)
 	oldWd, err := os.Getwd()
 	if err != nil {
@@ -699,11 +698,11 @@ func TestLsRelativeDir(t *testing.T) {
 	fs := afero.NewOsFs()
 	dir := tempDir()
 	defer os.RemoveAll(dir)
-	ioutil.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "x"), []byte{'a'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "y"), []byte{'a'}, 0o644)
 	os.Mkdir(filepath.Join(dir, "d"), 0o755)
-	ioutil.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
-	ioutil.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "a"), []byte{'b'}, 0o644)
+	os.WriteFile(filepath.Join(dir, "d", "b"), []byte{'b'}, 0o644)
 	ps, out, _ := newTest(fs)
 	oldWd, err := os.Getwd()
 	if err != nil {

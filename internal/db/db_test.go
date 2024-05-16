@@ -1,7 +1,6 @@
 package db
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -32,7 +31,7 @@ func addAll(db *Session, infos []FileInfo) error {
 }
 
 func TestVersionOk(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
+	dir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +49,7 @@ func TestVersionOk(t *testing.T) {
 }
 
 func TestVersionMismatch(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
+	dir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
