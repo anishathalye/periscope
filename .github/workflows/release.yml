@@ -6,15 +6,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
       - run: go test -v ./...
   release:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker://goreleaser/goreleaser-cross:v1.20.6
+      - uses: actions/checkout@v4
+      - uses: docker://goreleaser/goreleaser-cross:v1.23.3
         with:
           args: --clean
         env:
