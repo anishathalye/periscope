@@ -1,3 +1,4 @@
+version: 2
 project_name: periscope
 before:
   hooks:
@@ -50,9 +51,9 @@ builds:
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "SNAPSHOT-{{ .ShortCommit }}"
+  version_template: "SNAPSHOT-{{ .ShortCommit }}"
 changelog:
-  skip: true
+  disable: true
 archives:
   - wrap_in_directory: true
     format: tar.gz
