@@ -125,7 +125,10 @@ for named pipes. `-a` shows hidden files. `-d` lists only duplicates, while
 `-u` lists only unique files. `-v` lists all duplicates of every file, and `-r`
 shows the path to the duplicate as a relative path instead of an absolute path.
 `-R` lists files recursively; this flag combines well with the `-d` flag, to
-list only duplicate files recursively contained in a given directory.
+list only duplicate files recursively contained in a given directory. `-f`
+shows only files in the listing; this flag combines well with the `-R` flag
+along with `-u` or `-d`, to recursively list all the unique or duplicated files
+while omitting names of irrelevant directories in the output.
 
 **`psc tree` lists all duplicates in a given directory**
 

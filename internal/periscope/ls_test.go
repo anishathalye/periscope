@@ -722,3 +722,86 @@ func TestLsRelativeDir(t *testing.T) {
 		t.Fatalf("expected '%s', got '%s'", expected, got)
 	}
 }
+
+func TestLsFilesOnly(t *testing.T) {
+	fs := testfs.Read(`
+/d1/a [10000 1]
+/d1/b [1392 2]
+/d1/subdir/c [1191 3]
+/d1/subdir/d [1002 5]
+	`).Mkfs()
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Ls([]string{"/d1"}, &LsOptions{Files: true})
+	check(t, err)
+	got := strings.TrimRight(out.String(), "\n")
+	expected := strings.TrimSpace(`
+a
+b
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsFilesOnlyRecursive(t *testing.T) {
+	fs := testfs.Read(`
+/d1/a [10000 1]
+/d1/b [1392 2]
+/d1/subdir/c [1191 3]
+/d1/subdir/d [1002 5]
+/d1/subdir2/e [1234 6]
+	`).Mkfs()
+	err := fs.Mkdir("/d1/empty", 0o755)
+	check(t, err)
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err = ps.Ls([]string{"/d1"}, &LsOptions{Files: true, Recursive: true})
+	check(t, err)
+	got := strings.TrimRight(out.String(), "\n")
+	expected := strings.TrimSpace(`
+/d1:
+a
+b
+
+/d1/subdir:
+c
+d
+
+/d1/subdir2:
+e
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
+
+func TestLsFilesOnlyRecursiveUnique(t *testing.T) {
+	fs := testfs.Read(`
+/d1/a [10000 1]
+/d1/b [1392 2]
+/d1/c [1191 3]
+/d1/d [1002 5]
+/d1/subdir/c [1191 3]
+/d1/subdir/d [1002 5]
+/d1/subdir2/e [1234 6]
+	`).Mkfs()
+	err := fs.Mkdir("/d1/empty", 0o755)
+	check(t, err)
+	ps, out, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err = ps.Ls([]string{"/d1"}, &LsOptions{Files: true, Recursive: true, Unique: true})
+	check(t, err)
+	got := strings.TrimRight(out.String(), "\n")
+	expected := strings.TrimSpace(`
+/d1:
+a
+b
+
+/d1/subdir2:
+e
+	`)
+	if got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}

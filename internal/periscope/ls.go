@@ -21,6 +21,7 @@ type LsOptions struct {
 	Unique    bool
 	Relative  bool
 	Recursive bool
+	Files     bool
 }
 
 func (ps *Periscope) Ls(paths []string, options *LsOptions) herror.Interface {
@@ -70,7 +71,7 @@ func (ps *Periscope) ls1(path string, options *LsOptions, multi, top, firstToSho
 			}
 		}
 	}
-	withFilter := options.Duplicate || options.Unique
+	withFilter := options.Duplicate || options.Unique || options.Files
 	// only show directory name if any of the following are true:
 	// - multiple directories are listed in the command invocation, and
 	//   this is one of those directories (this is the top-level invocation)
@@ -141,6 +142,9 @@ func (ps *Periscope) list1(out io.Writer, file os.FileInfo, dirPath string, opti
 		show = false
 	}
 	if options.Duplicate && len(dupeSet) < 2 {
+		show = false
+	}
+	if options.Files && isDirectory {
 		show = false
 	}
 	if show {
