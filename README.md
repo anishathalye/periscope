@@ -186,18 +186,6 @@ Periscope depends on go-sqlite3, which uses cgo, so you need a C compiler
 present in your path. You might also need to set `CGO_ENABLED=1` if you have it
 disabled otherwise.
 
-<!--
-
-Testing releases:
-
-```
-docker run -e --rm --privileged -v $PWD:/go/src/github.com/anishathalye/periscope -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/anishathalye/periscope mailchain/goreleaser-xcgo --rm-dist --skip-publish
-```
-
-Supply `--snapshot` if version is not tagged
-
--->
-
 ## Contributing
 
 Bug reports, feature requests, feedback on the tool or documentation, and pull
