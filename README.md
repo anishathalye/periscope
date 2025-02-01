@@ -1,4 +1,4 @@
-# Periscope [![Build Status](https://github.com/anishathalye/periscope/workflows/CI/badge.svg)](https://github.com/anishathalye/periscope/actions?query=workflow%3ACI)
+# Periscope [![Build Status](https://github.com/anishathalye/periscope/actions/workflows/ci.yml/badge.svg)](https://github.com/anishathalye/periscope/actions/workflows/ci.yml)
 <!--
 Other useful stuff:
 
