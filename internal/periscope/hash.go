@@ -44,7 +44,10 @@ func (ps *Periscope) Hash(paths []string, options *HashOptions) herror.Interface
 			ShortHash: shortHash,
 			FullHash:  fullHash,
 		}
-		tx.Add(info)
+		if err := tx.Add(info); err != nil {
+			tx.Rollback()
+			return err
+		}
 		fmt.Fprintf(ps.outStream, "%s  %s\n", hex.EncodeToString(fullHash), path)
 	}
 	if err := tx.Commit(); err != nil {
