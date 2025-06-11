@@ -26,6 +26,7 @@ func (ps *Periscope) Forget(paths []string, options *ForgetOptions) herror.Inter
 		} else {
 			err := tx.RemoveDir(abs, 0, 0)
 			if err != nil {
+				tx.Rollback()
 				return err
 			}
 			// format path for nicer printing

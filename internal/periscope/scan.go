@@ -36,6 +36,7 @@ func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface
 	for _, path := range absPaths {
 		err := tx.RemoveDir(path, options.Minimum, options.Maximum)
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
@@ -43,12 +44,14 @@ func (ps *Periscope) Scan(paths []string, options *ScanOptions) herror.Interface
 	for info := range dupes {
 		err := tx.Add(info.(db.FileInfo))
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
 	// create indexes if they don't exist already
 	err = tx.CreateIndexes()
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 	if err = tx.Commit(); err != nil {

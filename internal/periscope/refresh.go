@@ -44,6 +44,7 @@ func (ps *Periscope) Refresh(options *RefreshOptions) herror.Interface {
 	}
 	for _, path := range gone {
 		if err = tx.Remove(path); err != nil {
+			tx.Rollback()
 			return err
 		}
 	}

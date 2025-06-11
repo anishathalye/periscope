@@ -30,10 +30,12 @@ func (ps *Periscope) Hash(paths []string, options *HashOptions) herror.Interface
 		binary.LittleEndian.PutUint64(szBuf, uint64(size))
 		shortHash, err := ps.hashPartial(abs, szBuf)
 		if err != nil {
+			tx.Rollback()
 			return herror.Internal(err, "")
 		}
 		fullHash, err := ps.hashFile(abs)
 		if err != nil {
+			tx.Rollback()
 			return herror.Internal(err, "")
 		}
 		info := db.FileInfo{

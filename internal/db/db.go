@@ -221,6 +221,18 @@ func (s *Session) Commit() herror.Interface {
 	return nil
 }
 
+func (s *Session) Rollback() herror.Interface {
+	if s.tx == nil {
+		return herror.Internal(nil, "Rollback(): not in a running transaction")
+	}
+	err := s.tx.Rollback()
+	if err != nil {
+		return herror.Internal(err, "")
+	}
+	s.tx = nil
+	return nil
+}
+
 func (s *Session) query(query string, args ...interface{}) (*sql.Rows, error) {
 	if s.tx != nil {
 		return s.tx.Query(query, args...)

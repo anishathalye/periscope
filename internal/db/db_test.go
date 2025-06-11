@@ -418,3 +418,45 @@ func TestRemoveDir(t *testing.T) {
 		t.Fatalf("expected 2 infos, got %d", len(got))
 	}
 }
+
+func TestRollback(t *testing.T) {
+	db := newInMemoryDb(t)
+	infos := []FileInfo{
+		{"/a/x", 1000, []byte("asdf"), []byte("asdfasdf")},
+		{"/b/x", 1000, []byte("asdf"), []byte("asdfasdf")},
+	}
+	tx, err := db.Begin()
+	check(t, err)
+	tx.Add(infos[0])
+	tx.Add(infos[1])
+	check(t, tx.Rollback())
+	got, err := db.AllInfos()
+	check(t, err)
+	if len(got) != 0 {
+		t.Fatalf("expected 0 infos after rollback, got %d", len(got))
+	}
+}
+
+func TestRollbackWithoutTransaction(t *testing.T) {
+	db := newInMemoryDb(t)
+	err := db.Rollback()
+	if err == nil {
+		t.Fatal("expected error when calling Rollback without transaction")
+	}
+	expected := "not in a running transaction"
+	if !strings.Contains(err.Error(), expected) {
+		t.Fatalf("expected error to contain '%s', was '%s'", expected, err.Error())
+	}
+}
+
+func TestCommitWithoutTransaction(t *testing.T) {
+	db := newInMemoryDb(t)
+	err := db.Commit()
+	if err == nil {
+		t.Fatal("expected error when calling Commit without transaction")
+	}
+	expected := "not in a running transaction"
+	if !strings.Contains(err.Error(), expected) {
+		t.Fatalf("expected error to contain '%s', was '%s'", expected, err.Error())
+	}
+}

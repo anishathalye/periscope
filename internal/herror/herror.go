@@ -137,19 +137,27 @@ type internal struct {
 }
 
 func (i *internal) Error() string {
-	if i.message != "" {
+	if i.message != "" && i.err != nil {
 		return fmt.Sprintf("%s (%s)", i.message, i.err.Error())
+	} else if i.message != "" {
+		return i.message
+	} else if i.err != nil {
+		return i.err.Error()
 	}
-	return i.err.Error()
+	return "internal error"
 }
 
 func (i *internal) Herror(debug bool) string {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, "internal error: ")
-	if i.message != "" {
+	if i.message != "" && i.err != nil {
 		fmt.Fprintf(buf, "%s (%s)\n", i.message, i.err.Error())
-	} else {
+	} else if i.message != "" {
+		fmt.Fprintf(buf, "%s\n", i.message)
+	} else if i.err != nil {
 		fmt.Fprintf(buf, "%s\n", i.err.Error())
+	} else {
+		fmt.Fprintf(buf, "unknown error\n")
 	}
 	if !debug {
 		fmt.Fprintf(buf, "\nThis might be a bug in periscope.\n\nRun with --debug to see a stack trace, and please consider opening a GitHub issue to report this occurrence.\n")
