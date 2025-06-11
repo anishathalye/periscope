@@ -211,7 +211,7 @@ func (ps *Periscope) findDuplicates(searchPaths []string, options *ScanOptions) 
 				if info.FullHash == nil {
 					hash, err := ps.hashFile(info.Path)
 					if err != nil {
-						log.Printf("hashPartial() returned error: %s", err)
+						log.Printf("hashFile() returned error: %s", err)
 						bar.Add(1) // ignored; no more work to do for this file
 						continue   // ignore this file
 					}
