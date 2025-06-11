@@ -86,8 +86,7 @@ func NewInMemory() (*Session, herror.Interface) {
 	//
 	// We need distinct in-memory databases (for separate tests),
 	// but each in-memory database should support multiple connections
-	ctr := atomic.LoadInt64(&inMemoryDbCtr)
-	atomic.StoreInt64(&inMemoryDbCtr, ctr+1)
+	ctr := atomic.AddInt64(&inMemoryDbCtr, 1)
 	return New(fmt.Sprintf("file:memdb%d?mode=memory&cache=shared", ctr), true)
 }
 
