@@ -89,7 +89,7 @@ func (ps *Periscope) findFilesBySize(paths []string, options *ScanOptions) (map[
 				return nil
 			}
 			size := info.Size()
-			if size > int64(options.Minimum) && (options.Maximum == 0 || size <= int64(options.Maximum)) {
+			if size > options.Minimum && (options.Maximum == 0 || size <= options.Maximum) {
 				if len(sizeToInfos[size]) == 0 {
 					// find all relevant files from the database, skipping the
 					// ones that are included in paths; we only do this once per
