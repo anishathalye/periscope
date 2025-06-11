@@ -460,3 +460,21 @@ func TestCommitWithoutTransaction(t *testing.T) {
 		t.Fatalf("expected error to contain '%s', was '%s'", expected, err.Error())
 	}
 }
+
+func TestRemoveNoCreate(t *testing.T) {
+	db := newInMemoryDb(t)
+
+	herr := db.Remove("/non/existent/directory/file.txt")
+	check(t, herr)
+
+	row, herr := db.queryRow("SELECT COUNT(*) FROM directory")
+	check(t, herr)
+
+	var count int
+	err := row.Scan(&count)
+	check(t, err)
+
+	if count > 0 {
+		t.Fatalf("Remove operation should not create directories, but %d directories were created", count)
+	}
+}

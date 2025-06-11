@@ -791,7 +791,7 @@ func (s *Session) LookupAll(path string, includeHidden bool) ([]DuplicateInfo, h
 func (s *Session) Remove(path string) herror.Interface {
 	dirname := filepath.Dir(path)
 	filename := filepath.Base(path)
-	dirid, err := s.pathToDirectoryId(dirname, true)
+	dirid, err := s.pathToDirectoryId(dirname, false)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
