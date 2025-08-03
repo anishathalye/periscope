@@ -227,7 +227,7 @@ func TestRmContainedFile(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	err := ps.Rm([]string{"/x"}, &RmOptions{HasContained: true, Contained: "/c"})
+	err := ps.Rm([]string{"/x"}, &RmOptions{Contained: []string{"/c"}})
 	check(t, err)
 	expected := testfs.Read(`
 /.bar [100 4]
@@ -256,7 +256,7 @@ func TestRmNoContainsFile(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	err := ps.Rm([]string{"/a"}, &RmOptions{HasContained: true, Contained: "/c"})
+	err := ps.Rm([]string{"/a"}, &RmOptions{Contained: []string{"/c"}})
 	checkErr(t, err)
 	expected := testfs.Read(`
 /.bar [100 4]
@@ -285,7 +285,7 @@ func TestRmContainedRecursive(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	err := ps.Rm([]string{"/u"}, &RmOptions{HasContained: true, Contained: "/o", Recursive: true})
+	err := ps.Rm([]string{"/u"}, &RmOptions{Contained: []string{"/o"}, Recursive: true})
 	check(t, err)
 	expected := testfs.Read(`
 /u/a [100 1]
@@ -311,7 +311,7 @@ func TestRmContainedTryDelete(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	err := ps.Rm([]string{"/o"}, &RmOptions{HasContained: true, Contained: "/o", Recursive: true})
+	err := ps.Rm([]string{"/o"}, &RmOptions{Contained: []string{"/o"}, Recursive: true})
 	check(t, err)
 	expected := testfs.Read(`
 /u/a [100 1]
@@ -645,12 +645,131 @@ func TestRmContainedCommonPrefix(t *testing.T) {
 	`).Mkfs()
 	ps, _, _ := newTest(fs)
 	ps.Scan([]string{"/"}, &ScanOptions{})
-	err := ps.Rm([]string{"/b/x"}, &RmOptions{HasContained: true, Contained: "/a"})
+	err := ps.Rm([]string{"/b/x"}, &RmOptions{Contained: []string{"/a"}})
 	checkErr(t, err)
 	expected := testfs.Read(`
 /a/y [100 1]
 /aa/x [200 2]
 /b/x [200 2]
+	`)
+	if !testfs.Equal(fs, expected) {
+		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmMultipleContained(t *testing.T) {
+	fs := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/c/x [100 1]
+/d/y [200 2]
+/e/z [300 3]
+/f/z [300 3]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/c/x"}, &RmOptions{Contained: []string{"/a", "/b"}})
+	check(t, err)
+	expected := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/d/y [200 2]
+/e/z [300 3]
+/f/z [300 3]
+	`)
+	if !testfs.Equal(fs, expected) {
+		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmMultipleContainedFail(t *testing.T) {
+	fs := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/c/x [100 1]
+/d/y [200 2]
+/e/z [300 3]
+/f/z [300 3]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/e/z"}, &RmOptions{Contained: []string{"/a", "/b"}})
+	checkErr(t, err)
+	expected := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/c/x [100 1]
+/d/y [200 2]
+/e/z [300 3]
+/f/z [300 3]
+	`)
+	if !testfs.Equal(fs, expected) {
+		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmMultipleContainedSecondPath(t *testing.T) {
+	fs := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/c/x [100 1]
+/d/y [200 2]
+/e/z [300 3]
+/f/z [300 3]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/d/y"}, &RmOptions{Contained: []string{"/a", "/b"}})
+	check(t, err)
+	expected := testfs.Read(`
+/a/x [100 1]
+/b/y [200 2]
+/c/x [100 1]
+/e/z [300 3]
+/f/z [300 3]
+	`)
+	if !testfs.Equal(fs, expected) {
+		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmMultipleContainedRecursive(t *testing.T) {
+	fs := testfs.Read(`
+/u/a [100 1]
+/u/b [100 2]
+/u/c [100 3]
+/u/d [100 4]
+/o1/a [100 1]
+/o2/b [100 2]
+/elsewhere/c [100 3]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/u"}, &RmOptions{Contained: []string{"/o1", "/o2"}, Recursive: true})
+	check(t, err)
+	expected := testfs.Read(`
+/u/c [100 3]
+/u/d [100 4]
+/o1/a [100 1]
+/o2/b [100 2]
+/elsewhere/c [100 3]
+	`)
+	if !testfs.Equal(fs, expected) {
+		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))
+	}
+}
+
+func TestRmMultipleContainedEmpty(t *testing.T) {
+	fs := testfs.Read(`
+/a/x [100 1]
+/b/x [100 1]
+	`).Mkfs()
+	ps, _, _ := newTest(fs)
+	ps.Scan([]string{"/"}, &ScanOptions{})
+	err := ps.Rm([]string{"/a/x"}, &RmOptions{Contained: []string{}})
+	check(t, err)
+	expected := testfs.Read(`
+/b/x [100 1]
 	`)
 	if !testfs.Equal(fs, expected) {
 		t.Fatalf("expected:\n%sgot:\n%s", expected.ShowIndent(2), testfs.ShowIndent(fs, 2))

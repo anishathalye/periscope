@@ -11,24 +11,24 @@ import (
 )
 
 type RmOptions struct {
-	Recursive    bool
-	Verbose      bool
-	DryRun       bool
-	HasContained bool
-	Contained    string
-	Arbitrary    bool
+	Recursive bool
+	Verbose   bool
+	DryRun    bool
+	Contained []string
+	Arbitrary bool
 }
 
 func (ps *Periscope) Rm(paths []string, options *RmOptions) herror.Interface {
 	var herr herror.Interface
 
 	// validate arguments
-	var absContained string
-	if options.HasContained {
-		absContained, _, herr = ps.checkFile(options.Contained, false, true, "access", false, true)
+	var absContained []string
+	for _, contained := range options.Contained {
+		absPath, _, herr := ps.checkFile(contained, false, true, "access", false, true)
 		if herr != nil {
 			return herr
 		}
+		absContained = append(absContained, absPath)
 	}
 
 	for _, path := range paths {
@@ -55,11 +55,11 @@ func (ps *Periscope) Rm(paths []string, options *RmOptions) herror.Interface {
 	return herr
 }
 
-func (ps *Periscope) removeFile(path string, options *RmOptions, absContained string) herror.Interface {
+func (ps *Periscope) removeFile(path string, options *RmOptions, absContained []string) herror.Interface {
 	return ps.remove1(map[string]struct{}{path: {}}, options, true, "", absContained)
 }
 
-func (ps *Periscope) removeDirectory(path string, absPath string, options *RmOptions, absContained string) herror.Interface {
+func (ps *Periscope) removeDirectory(path string, absPath string, options *RmOptions, absContained []string) herror.Interface {
 	if !options.Recursive {
 		fmt.Fprintf(ps.errStream, "cannot remove '%s': must specify -r/--recursive to delete directories\n", path)
 		return herror.Silent()
@@ -89,13 +89,13 @@ func (ps *Periscope) removeDirectory(path string, absPath string, options *RmOpt
 	return herr
 }
 
-func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions, singleFile bool, directory, absContained string) herror.Interface {
+func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions, singleFile bool, directory string, absContained []string) herror.Interface {
 	// take a conservative approach to deleting files:
 	// - compute a full hash of all files in the set; if they're not all the same, abort
 	// - go through all other files in the same duplicate set that are
-	//   outside the candidate set (and if options.HasContained is set,
-	//   then only count the ones that are present in the options.Contained
-	//   directory); if none matches the hash, abort
+	//   outside the candidate set (and if contained directories are specified,
+	//   then only count the ones that are present in any of the contained
+	//   directories); if none matches the hash, abort
 	// - delete all candidates in the set
 
 	// early sanity checks
@@ -200,10 +200,20 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 			// this is one of the paths we are considering deleting
 			continue // bad candidate
 		}
-		if options.HasContained && !strings.HasPrefix(path, absContained+string(os.PathSeparator)) {
-			// outside set we are considering deleting, but not in
-			// contained directory
-			continue // bad candidate
+		if len(absContained) > 0 {
+			// check if path is in any of the contained directories
+			inContained := false
+			for _, containedDir := range absContained {
+				if strings.HasPrefix(path, containedDir+string(os.PathSeparator)) {
+					inContained = true
+					break
+				}
+			}
+			if !inContained {
+				// outside set we are considering deleting, but not in
+				// any contained directory
+				continue // bad candidate
+			}
 		}
 		// check that the hash still matches, that the file still
 		// exists and hasn't changed
@@ -237,8 +247,12 @@ func (ps *Periscope) remove1(candidates map[string]struct{}, options *RmOptions,
 	}
 	if !otherMatch {
 		if singleFile {
-			if options.HasContained {
-				fmt.Fprintf(ps.errStream, "cannot remove '%s': no duplicates in '%s'\n", path0, options.Contained)
+			if len(absContained) > 0 {
+				if len(absContained) == 1 {
+					fmt.Fprintf(ps.errStream, "cannot remove '%s': no duplicates in '%s'\n", path0, options.Contained[0])
+				} else {
+					fmt.Fprintf(ps.errStream, "cannot remove '%s': no duplicates in specified contained directories\n", path0)
+				}
 			} else {
 				fmt.Fprintf(ps.errStream, "cannot remove '%s': no duplicates\n", path0)
 			}
